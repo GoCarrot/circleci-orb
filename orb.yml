@@ -1,0 +1,167 @@
+version: 2.1
+description: Helper Orb for Teak SDK CircleCI builds
+
+commands:
+  #
+  # Set version of Ruby to use, override what is in the repo
+  #
+  set-ruby-version:
+    description: Override the version of Ruby specified in .ruby-version
+    parameters:
+      version:
+        type: string
+        description: Ruby version to use
+    steps:
+      - run: echo "<< parameters.version >>" > .ruby-version
+        # shell: /bin/bash -eo pipefail
+
+  #
+  # Deterministic Zip
+  #
+  zip_r_deterministic:
+    description: "Create a deterministic zip of a directory."
+    parameters:
+      before:
+        type: string
+        default: ""
+      dir:
+        type: string
+      out:
+        type: string
+        description: Relative to CIRCLE_WORKING_DIRECTORY
+      after:
+        type: string
+        default: ""
+      date:
+        type: string
+        default: |
+          `git ls-files -z . | xargs -0 -n1 -I{} -- git log -1 --date=format:"%Y%m%d%H%M" --format="%ad" {} | sort -r | head -n 1`
+    steps:
+      - when:
+          condition: << parameters.before >>
+          steps:
+            - run:
+                name: Zip Deterministic - PreProcess
+                command: |
+                  cd << parameters.dir >>
+                  << parameters.before >>
+      - run:
+          name: Zip Deterministic - << parameters.dir >>
+          command: |
+            cd << parameters.dir >>
+            export TEAK_ZIP_R_DETERMINISTIC_DATETIME=<< parameters.date >>
+            find . -exec touch -t $TEAK_ZIP_R_DETERMINISTIC_DATETIME {} +
+            zip -rX /tmp/teak_zip_r_deterministic.zip .
+            touch -t $TEAK_ZIP_R_DETERMINISTIC_DATETIME /tmp/teak_zip_r_deterministic.zip
+            cd -
+            mv /tmp/teak_zip_r_deterministic.zip << parameters.out >>
+      - when:
+          condition: << parameters.after >>
+          steps:
+            - run:
+                name: Zip Deterministic - PostProcess
+                command: |
+                  cd << parameters.dir >>
+                  << parameters.after >>
+
+  ##### Terraform
+
+  #
+  # Install terraform by version
+  #
+  terraform_install:
+    description: "Prepare a specified Terraform version for use."
+    parameters:
+      version:
+        type: string
+      platform:
+        type: string
+        default: "linux_amd64"
+    steps:
+      - restore_cache:
+          key: teak-orb-terraform-<< parameters.version >>
+      - run:
+          name: Install or Upgrade Terraform
+          command: if [ ! -f terraform/terraform ] || [ `./terraform/terraform version | grep -o 'Terraform v[0-9]*\.[0-9]*\.[0-9]*' | sed 's/Terraform v//'` != << parameters.version >> ]; then wget https://releases.hashicorp.com/terraform/<< parameters.version >>/terraform_<< parameters.version >>_<< parameters.platform >>.zip && unzip -o terraform_<< parameters.version >>_<< parameters.platform >>.zip -d terraform ; fi
+      - save_cache:
+          key: teak-orb-terraform-<< parameters.version >>
+          paths:
+            - terraform
+
+  #
+  # Run 'terraform init'
+  #
+  terraform_init:
+    description: "Run `terraform init`"
+    steps:
+      - run:
+          name: Terraform Init
+          command: ./terraform/terraform init
+
+  #
+  # Run 'terraform plan' and save out the plan to the workspace
+  #
+  terraform_plan:
+    description: "Run `terraform plan`."
+    parameters:
+      out_plan:
+        type: string
+        default: "teak-orb-terraform.plan"
+      out_log:
+        type: string
+        default: "teak-orb-terraform.plan.log"
+      out_path:
+        type: string
+        default: "/tmp/teak-orb-terraform"
+    steps:
+      - run:
+          name: Terraform Plan
+          command: |
+            mkdir -p << parameters.out_path >>
+            ./terraform/terraform plan -out=<< parameters.out_path >>/<< parameters.out_plan >> > << parameters.out_path >>/<< parameters.out_log >>
+            cat << parameters.out_path >>/<< parameters.out_log >>
+      - persist_to_workspace:
+          root: << parameters.out_path >>
+          paths:
+            - << parameters.out_plan >>
+            - << parameters.out_log >>
+
+  #
+  # Run 'terraform apply' on a previously saved plan from the workspace
+  #
+  terraform_apply:
+    description: "Run `terraform apply`."
+    parameters:
+      plan:
+        type: string
+        default: "teak-orb-terraform.plan"
+      plan_log:
+        type: string
+        default: "teak-orb-terraform.plan.log"
+      path:
+        type: string
+        default: "/tmp/teak-orb-terraform"
+      dry_run:
+        type: boolean
+        default: false
+    steps:
+      - run:
+          name: Prepare attach_workspace
+          command: mkdir -p << parameters.path >>
+      - attach_workspace:
+          at: << parameters.path >>
+      - unless:
+          condition: << parameters.dry_run >>
+          steps:
+            - run:
+                name: Terraform Apply
+                command: |
+                  ./terraform/terraform apply -auto-approve << parameters.path >>/<< parameters.plan >>
+      - when:
+          condition: << parameters.dry_run >>
+          steps:
+            - run:
+                name: Terraform Apply (Dry Run)
+                command: |
+                  ./terraform/terraform show << parameters.path >>/<< parameters.plan >>
+
