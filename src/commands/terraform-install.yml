@@ -1,0 +1,20 @@
+description: "Prepare a specified Terraform version for use."
+
+parameters:
+  version:
+    type: string
+
+  platform:
+    type: string
+    default: "linux_amd64"
+
+steps:
+  - restore_cache:
+      key: teak-orb-terraform-<< parameters.version >>
+  - run:
+      name: Install or Upgrade Terraform
+      command: if [ ! -f terraform/terraform ] || [ `./terraform/terraform version | grep -o 'Terraform v[0-9]*\.[0-9]*\.[0-9]*' | sed 's/Terraform v//'` != << parameters.version >> ]; then wget https://releases.hashicorp.com/terraform/<< parameters.version >>/terraform_<< parameters.version >>_<< parameters.platform >>.zip && unzip -o terraform_<< parameters.version >>_<< parameters.platform >>.zip -d terraform ; fi
+  - save_cache:
+      key: teak-orb-terraform-<< parameters.version >>
+      paths:
+        - terraform

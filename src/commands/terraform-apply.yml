@@ -1,0 +1,39 @@
+description: "Run `terraform apply`."
+
+parameters:
+  plan:
+    type: string
+    default: "teak-orb-terraform.plan"
+
+  plan_log:
+    type: string
+    default: "teak-orb-terraform.plan.log"
+
+  path:
+    type: string
+    default: "/tmp/teak-orb-terraform"
+
+  dry_run:
+    type: boolean
+    default: false
+
+steps:
+  - run:
+      name: Prepare attach_workspace
+      command: mkdir -p << parameters.path >>
+  - attach_workspace:
+      at: << parameters.path >>
+  - unless:
+      condition: << parameters.dry_run >>
+      steps:
+        - run:
+            name: Terraform Apply
+            command: |
+              ./terraform/terraform apply -auto-approve << parameters.path >>/<< parameters.plan >>
+  - when:
+      condition: << parameters.dry_run >>
+      steps:
+        - run:
+            name: Terraform Apply (Dry Run)
+            command: |
+              ./terraform/terraform show << parameters.path >>/<< parameters.plan >>

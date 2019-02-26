@@ -1,0 +1,50 @@
+description: "Create a deterministic zip of a directory."
+
+parameters:
+  before:
+    type: string
+    default: ""
+
+  dir:
+    type: string
+
+  out:
+    type: string
+    description: Relative to CIRCLE_WORKING_DIRECTORY
+
+  after:
+    type: string
+    default: ""
+
+  date:
+    type: string
+    default: |
+      `git ls-files -z . | xargs -0 -n1 -I{} -- git log -1 --date=format:"%Y%m%d%H%M" --format="%ad" {} | sort -r | head -n 1`
+
+steps:
+  - when:
+      condition: << parameters.before >>
+      steps:
+        - run:
+            name: Zip Deterministic - PreProcess
+            command: |
+              cd << parameters.dir >>
+              << parameters.before >>
+  - run:
+      name: Zip Deterministic - << parameters.dir >>
+      command: |
+        cd << parameters.dir >>
+        export TEAK_ZIP_R_DETERMINISTIC_DATETIME=<< parameters.date >>
+        find . -exec touch -t $TEAK_ZIP_R_DETERMINISTIC_DATETIME {} +
+        zip -rX /tmp/teak_zip_r_deterministic.zip .
+        touch -t $TEAK_ZIP_R_DETERMINISTIC_DATETIME /tmp/teak_zip_r_deterministic.zip
+        cd -
+        mv /tmp/teak_zip_r_deterministic.zip << parameters.out >>
+  - when:
+      condition: << parameters.after >>
+      steps:
+        - run:
+            name: Zip Deterministic - PostProcess
+            command: |
+              cd << parameters.dir >>
+              << parameters.after >>

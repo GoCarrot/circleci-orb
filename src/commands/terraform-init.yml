@@ -1,0 +1,6 @@
+description: "Run `terraform init`"
+
+steps:
+  - run:
+      name: Terraform Init
+      command: ./terraform/terraform init

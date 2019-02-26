@@ -1,0 +1,10 @@
+description: Override the version of Ruby specified in .ruby-version
+
+parameters:
+  version:
+    type: string
+    description: Ruby version to use
+
+steps:
+  - run: echo "<< parameters.version >>" > .ruby-version
+    # shell: /bin/bash -eo pipefail
