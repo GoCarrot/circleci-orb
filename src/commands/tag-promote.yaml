@@ -1,0 +1,18 @@
+description: Promote a commit to a tagged commit.
+
+parameters:
+  fingerprint:
+    type: string
+    description: SSH Key Fingerprint
+
+steps:
+  - add_ssh_keys:
+      fingerprints:
+        - "<< parameters.fingerprint >>"
+  - run:
+      name: Promote Tagged Build
+      command: |
+        git config user.email "team@teak.io"
+        git config user.name "Teak CI"
+        PVERSION=`git log -1 --pretty=%B | perl -wne '/[Pp]romote( to)?: ([\w\.]+)/i and print $2'`
+        [ ! -z "$PVERSION" ] && (git tag -a $PVERSION -m "Promoted by CI" && git push --tags) || echo "No tag needed"
