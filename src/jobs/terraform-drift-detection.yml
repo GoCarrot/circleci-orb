@@ -1,0 +1,22 @@
+description: >
+  Detect if there is any drift between terraform state, live state, and terraform configuration.
+  This job will fail if there is any detected drift.
+
+docker:
+  - image: cimg/base:2021.04
+
+parameters:
+  version:
+    type: string
+    default: "0.15.4"
+
+  platform:
+    type: string
+    default: "linux_amd64"
+
+steps:
+  - terraform-install:
+      version: << parameters.version >>
+      platform: << parameters.platform >>
+  - terraform-init
+  - terraform-drift-detection
