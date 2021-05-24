@@ -1,0 +1,27 @@
+description: "Detect if there is any drift between terraform state, live state, and terraform configuration."
+
+parameters:
+  out_plan:
+    type: string
+    default: "teak-orb-terraform.plan"
+
+  out_log:
+    type: string
+    default: "teak-orb-terraform.plan.log"
+
+  out_path:
+    type: string
+    default: "/tmp/teak-orb-terraform"
+
+steps:
+  - run:
+      name: Terraform Plan
+      command: |
+        mkdir -p << parameters.out_path >>
+        ./terraform/terraform plan -detailed-exitcode -lock=false -out=<< parameters.out_path >>/<< parameters.out_plan >> > << parameters.out_path >>/<< parameters.out_log >>
+        cat << parameters.out_path >>/<< parameters.out_log >>
+  - persist_to_workspace:
+      root: << parameters.out_path >>
+      paths:
+        - << parameters.out_plan >>
+        - << parameters.out_log >>
