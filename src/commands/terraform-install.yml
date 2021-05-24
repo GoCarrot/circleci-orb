@@ -3,6 +3,7 @@ description: "Prepare a specified Terraform version for use."
 parameters:
   version:
     type: string
+    default: "0.15.4"
 
   platform:
     type: string
