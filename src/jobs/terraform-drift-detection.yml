@@ -15,6 +15,7 @@ parameters:
     default: "linux_amd64"
 
 steps:
+  - checkout
   - terraform-install:
       version: << parameters.version >>
       platform: << parameters.platform >>
