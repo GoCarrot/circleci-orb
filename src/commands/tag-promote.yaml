@@ -4,15 +4,29 @@ parameters:
   fingerprint:
     type: string
     description: SSH Key Fingerprint
+    default: ""
+
+  on_tag:
+    type: string
+    description: Command to execute if a new tag is created
+    default: ":"
+
+  on_skip:
+    type: string
+    description: Command to execute if no tag is created
+    default: ":"
 
 steps:
-  - add_ssh_keys:
-      fingerprints:
-        - "<< parameters.fingerprint >>"
+  - when:
+      condition: << parameters.fingerprint >>
+      steps:
+        - add_ssh_keys:
+            fingerprints:
+              - "<< parameters.fingerprint >>"
   - run:
       name: Promote Tagged Build
       command: |
         git config user.email "team@teak.io"
         git config user.name "Teak CI"
-        PVERSION=`git log -1 --pretty=%B | perl -wne '/[Pp]romote( to)?: ([\w\.]+)/i and print $2'`
-        [ ! -z "$PVERSION" ] && (git tag -a $PVERSION -m "Promoted by CI" && git push --tags) || echo "No tag needed"
+        PVERSION=`git log -1 --pretty=%B | perl -wne '/[Pp]romote( to)?: ([\w\.\-]+)/i and print $2'`
+        [ ! -z "$PVERSION" ] && (git tag -a $PVERSION -m "Promoted by CI" && git push --tags && << parameters.on_tag >>) || echo "No tag needed" && << parameters.on_skip >>
