@@ -28,5 +28,5 @@ steps:
       command: |
         git config user.email "team@teak.io"
         git config user.name "Teak CI"
-        PVERSION=`git log -1 --pretty=%B | perl -wne '/[Pp]romote( to)?: ([\w\.\-]+)/i and print $2'`
+        export PVERSION=`git log -1 --pretty=%B | perl -wne '/[Pp]romote( to)?: ([\w\.\-]+)/i and print $2'`
         [ ! -z "$PVERSION" ] && (git tag -a $PVERSION -m "Promoted by CI" && git push --tags && << parameters.on_tag >>) || echo "No tag needed" && << parameters.on_skip >>
