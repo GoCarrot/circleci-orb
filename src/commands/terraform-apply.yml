@@ -9,7 +9,7 @@ parameters:
     type: string
     default: "teak-orb-terraform.plan.log"
 
-  path:
+  plan_path:
     type: string
     default: "/tmp/teak-orb-terraform"
 
@@ -21,6 +21,11 @@ parameters:
     type: string
     description: Name of the terraform workspace
     default: ""
+
+  path:
+    type: "string"
+    description: "Path to the terraform module"
+    default: "."
 
 steps:
   - run:
@@ -39,14 +44,20 @@ steps:
               export workspace
               unset TF_WORKSPACE
 
+              readonly module_path="<< parameters.path >>"
+              if [[ ! -d "$module_path" ]]; then
+                echo "Path does not exist: \"$module_path\""
+                exit 1
+              fi
+
               if [[ $workspace_parameter != "" ]]; then
                 echo "[INFO] Provisioning workspace: $workspace"
-                ./terraform/terraform workspace select -no-color "$workspace" || terraform workspace new -no-color "$workspace"
+                ./terraform/terraform -chdir="$module_path" workspace select -no-color "$workspace" "$m" || terraform -chdir="$module_path" workspace new -no-color "$workspace"
               else
                 echo "[INFO] Using default workspace"
               fi
 
-              ./terraform/terraform apply -auto-approve << parameters.path >>/<< parameters.plan >>
+              ./terraform/terraform -chdir="$module_path" apply -auto-approve << parameters.plan_path >>/<< parameters.plan >>
   - when:
       condition: << parameters.dry_run >>
       steps:

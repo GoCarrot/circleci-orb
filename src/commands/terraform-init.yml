@@ -1,6 +1,20 @@
 description: "Run `terraform init`"
 
+parameters:
+  path:
+    type: "string"
+    description: "Path to the terraform module"
+    default: "."
+
+
 steps:
   - run:
       name: Terraform Init
-      command: ./terraform/terraform init
+      command: |
+        readonly module_path="<< parameters.path >>"
+        if [[ ! -d "$module_path" ]]; then
+          echo "Path does not exist: \"$module_path\""
+          exit 1
+        fi
+
+        ./terraform/terraform init -chdir="$module_path"
