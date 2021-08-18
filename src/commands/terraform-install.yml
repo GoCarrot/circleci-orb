@@ -25,7 +25,7 @@ steps:
           wget https://releases.hashicorp.com/terraform/<< parameters.version >>/terraform_<< parameters.version >>_SHA256SUMS.sig
 
           echo "Validating signatures..."
-          if [ ! gpg --batch --verify terraform_<< parameters.version >>_SHA256SUMS.sig terraform_<< parameters.version >>_SHA256SUMS ]; then
+          if ! gpg --batch --verify terraform_<< parameters.version >>_SHA256SUMS.sig terraform_<< parameters.version >>_SHA256SUMS ; then
             echo "SHA256SUMS file not signed?"
             exit 1
           fi
