@@ -17,6 +17,11 @@ parameters:
     type: boolean
     default: false
 
+  workspace:
+    type: string
+    description: Name of the terraform workspace
+    default: ""
+
 steps:
   - run:
       name: Prepare attach_workspace
@@ -29,6 +34,18 @@ steps:
         - run:
             name: Terraform Apply
             command: |
+              readonly workspace_parameter="<< parameters.workspace >>"
+              readonly workspace="${TF_WORKSPACE:-$workspace_parameter}"
+              export workspace
+              unset TF_WORKSPACE
+
+              if [[ $workspace_parameter != "" ]]; then
+                echo "[INFO] Provisioning workspace: $workspace"
+                ./terraform/terraform workspace select -no-color "$workspace" || terraform workspace new -no-color "$workspace"
+              else
+                echo "[INFO] Using default workspace"
+              fi
+
               ./terraform/terraform apply -auto-approve << parameters.path >>/<< parameters.plan >>
   - when:
       condition: << parameters.dry_run >>

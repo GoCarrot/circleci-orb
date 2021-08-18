@@ -13,10 +13,27 @@ parameters:
     type: string
     default: "/tmp/teak-orb-terraform"
 
+  workspace:
+    type: string
+    description: Name of the terraform workspace
+    default: ""
+
 steps:
   - run:
       name: Terraform Plan
       command: |
+        readonly workspace_parameter="<< parameters.workspace >>"
+        readonly workspace="${TF_WORKSPACE:-$workspace_parameter}"
+        export workspace
+        unset TF_WORKSPACE
+
+        if [[ $workspace_parameter != "" ]]; then
+          echo "[INFO] Provisioning workspace: $workspace"
+          ./terraform/terraform workspace select -no-color "$workspace" || terraform workspace new -no-color "$workspace"
+        else
+          echo "[INFO] Using default workspace"
+        fi
+
         mkdir -p << parameters.out_path >>
         ./terraform/terraform plan -out=<< parameters.out_path >>/<< parameters.out_plan >> > << parameters.out_path >>/<< parameters.out_log >>
         cat << parameters.out_path >>/<< parameters.out_log >>
