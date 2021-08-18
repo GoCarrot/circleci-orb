@@ -13,8 +13,34 @@ steps:
   - restore_cache:
       key: teak-orb-terraform-<< parameters.version >>
   - run:
+      name: Import Hashicorp signing key
+      command: |
+        gpg --keyserver keyserver.ubuntu.com --recev 72D7468F
+  - run:
       name: Install or Upgrade Terraform
-      command: if [ ! -f terraform/terraform ] || [ `./terraform/terraform version | grep -o 'Terraform v[0-9]*\.[0-9]*\.[0-9]*' | sed 's/Terraform v//'` != << parameters.version >> ]; then wget https://releases.hashicorp.com/terraform/<< parameters.version >>/terraform_<< parameters.version >>_<< parameters.platform >>.zip && unzip -o terraform_<< parameters.version >>_<< parameters.platform >>.zip -d terraform ; fi
+      command: |
+        if [ ! -f terraform/terraform ] || [ `./terraform/terraform version | grep -o 'Terraform v[0-9]*\.[0-9]*\.[0-9]*' | sed 's/Terraform v//'` != << parameters.version >> ]; then
+          wget https://releases.hashicorp.com/terraform/<< parameters.version >>/terraform_<< parameters.version >>_<< parameters.platform >>.zip
+          wget https://releases.hashicorp.com/terraform/<< parameters.version >>/terraform_<< parameters.version >>_SHA256SUMS
+          wget https://releases.hashicorp.com/terraform/<< parameters.version >>/terraform_<< parameters.version >>_SHA256SUMS.sig
+
+          echo "Validating signatures..."
+          if [ ! gpg --batch --verify terraform_<< parameters.version >>_SHA256SUMS.sig terraform_<< parameters.version >>_SHA256SUMS ]; then
+            echo "SHA256SUMS file not signed?"
+            exit 1
+          fi
+
+          # Validate checksum
+          expected_sha=$(cat terraform_<< parameters.version >>_SHA256SUMS | grep "terraform_<< parameters.version >>_<< parameters.platform >>.zip" | awk '{print $1}')
+          download_sha=$(shasum -a 256 "terraform_<< parameters.version >>_<< parameters.platform >>.zip" | cut -d' ' -f1)
+          echo "Validating download..."
+          if [ $expected_sha != $download_sha ]; then
+            echo "Expected SHA256SUM does not match downloaded file, exiting."
+            exit 1
+          fi
+
+          unzip -o terraform_<< parameters.version >>_<< parameters.platform >>.zip -d terraform
+        fi
   - save_cache:
       key: teak-orb-terraform-<< parameters.version >>
       paths:
