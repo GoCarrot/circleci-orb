@@ -15,7 +15,7 @@ steps:
   - run:
       name: Import Hashicorp signing key
       command: |
-        gpg --keyserver keyserver.ubuntu.com --recev 72D7468F
+        gpg --keyserver keyserver.ubuntu.com --recv 72D7468F
   - run:
       name: Install or Upgrade Terraform
       command: |
