@@ -1,0 +1,55 @@
+description: >
+  Run terraform plan, outputing a planfile for later application to our artifacts and workspace.
+
+docker:
+  - image: cimg/base:2021.04
+
+parameters:
+  version:
+    description: "Version of terraform to use"
+    type: string
+    default: "1.0.5"
+
+  platform:
+    description: "Platform terraform will run on"
+    type: string
+    default: "linux_amd64"
+
+  path:
+    type: "string"
+    description: "Path to the terraform module"
+    default: "."
+
+  workspace:
+    type: "string"
+    description: Name of the terraform workspace
+    default: ""
+
+  out_plan:
+    type: string
+    default: "teak-orb-terraform.tfplan"
+    description: "The name of the outputted planfile"
+
+  out_path:
+    type: string
+    description: "Path the planfile will be stored in. Will be persisted to workspace."
+    default: "/tmp/teak-orb-terraform"
+
+  out_log:
+    type: string
+    default: "teak-orb-terraform.plan.log"
+    description: "Name of the file the plan log should be stored in."
+
+steps:
+  - checkout
+  - terraform-install:
+      version: << parameters.version >>
+      platform: << parameters.platform >>
+  - terraform-init:
+      path: << parameters.path >>
+  - terraform-plan:
+      out_plan: << parameters.out_plan >>
+      out_log: << parameters.out_log >>
+      out_path: << parameters.out_path >>
+      workspace: << parameters.workspace >>
+      path: << parameters.path >>
