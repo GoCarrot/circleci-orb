@@ -27,16 +27,16 @@ steps:
   - run:
       name: Terraform Plan
       command: |
-        readonly workspace_parameter="<< parameters.workspace >>"
-        readonly workspace="${TF_WORKSPACE:-$workspace_parameter}"
-        export workspace
-        unset TF_WORKSPACE
-
         readonly module_path="<< parameters.path >>"
         if [[ ! -d "$module_path" ]]; then
           echo "Path does not exist: \"$module_path\""
           exit 1
         fi
+
+        readonly workspace_parameter="<< parameters.workspace >>"
+        readonly workspace="${TF_WORKSPACE:-$workspace_parameter}"
+        export workspace
+        unset TF_WORKSPACE
 
         if [[ $workspace_parameter != "" ]]; then
           echo "[INFO] Provisioning workspace: $workspace"

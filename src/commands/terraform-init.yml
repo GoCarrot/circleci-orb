@@ -6,6 +6,11 @@ parameters:
     description: "Path to the terraform module"
     default: "."
 
+  workspace:
+    type: string
+    description: Name of the terraform workspace
+    default: ""
+
 
 steps:
   - restore_cache:
@@ -17,6 +22,18 @@ steps:
         if [[ ! -d "$module_path" ]]; then
           echo "Path does not exist: \"$module_path\""
           exit 1
+        fi
+
+        readonly workspace_parameter="<< parameters.workspace >>"
+        readonly workspace="${TF_WORKSPACE:-$workspace_parameter}"
+        export workspace
+        unset TF_WORKSPACE
+
+        if [[ $workspace_parameter != "" ]]; then
+          echo "[INFO] Provisioning workspace: $workspace"
+          ~/terraform/terraform -chdir="$module_path" workspace select -no-color "$workspace" || terraform -chdir="$module_path" workspace new -no-color "$workspace"
+        else
+          echo "[INFO] Using default workspace"
         fi
 
         ~/terraform/terraform -chdir="$module_path" init

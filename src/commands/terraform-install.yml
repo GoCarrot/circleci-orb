@@ -42,6 +42,6 @@ steps:
           unzip -o terraform_<< parameters.version >>_<< parameters.platform >>.zip -d ~/terraform
         fi
   - save_cache:
-      key: teak-orb-terraform-<< parameters.version >>
+      key: teak-orb-terraform-v2-<< parameters.version >>
       paths:
         - ~/terraform
