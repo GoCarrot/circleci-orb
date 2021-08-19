@@ -1,0 +1,16 @@
+description: "Prepare a specified Packer version for use."
+
+parameters:
+  version:
+    type: string
+    default: "1.7.4"
+
+  platform:
+    type: string
+    default: "linux_amd64"
+
+steps:
+  - hashicorp-install:
+      tool: "packer"
+      version: << parameters.version >>
+      platform: << parameters.platform >>
