@@ -52,16 +52,16 @@ steps:
 
               if [[ $workspace_parameter != "" ]]; then
                 echo "[INFO] Provisioning workspace: $workspace"
-                ./terraform/terraform -chdir="$module_path" workspace select -no-color "$workspace" || terraform -chdir="$module_path" workspace new -no-color "$workspace"
+                ~/terraform/terraform -chdir="$module_path" workspace select -no-color "$workspace" || terraform -chdir="$module_path" workspace new -no-color "$workspace"
               else
                 echo "[INFO] Using default workspace"
               fi
 
-              ./terraform/terraform -chdir="$module_path" apply -auto-approve << parameters.plan_path >>/<< parameters.plan >>
+              ~/terraform/terraform -chdir="$module_path" apply -auto-approve << parameters.plan_path >>/<< parameters.plan >>
   - when:
       condition: << parameters.dry_run >>
       steps:
         - run:
             name: Terraform Apply (Dry Run)
             command: |
-              ./terraform/terraform show << parameters.path >>/<< parameters.plan >>
+              ~/terraform/terraform show << parameters.path >>/<< parameters.plan >>

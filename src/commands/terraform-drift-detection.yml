@@ -18,7 +18,7 @@ steps:
       name: Terraform Plan
       command: |
         mkdir -p << parameters.out_path >>
-        ./terraform/terraform plan -detailed-exitcode -lock=false -out=<< parameters.out_path >>/<< parameters.out_plan >> > << parameters.out_path >>/<< parameters.out_log >>
+        ~/terraform/terraform plan -detailed-exitcode -lock=false -out=<< parameters.out_path >>/<< parameters.out_plan >> > << parameters.out_path >>/<< parameters.out_log >>
         cat << parameters.out_path >>/<< parameters.out_log >>
   - persist_to_workspace:
       root: << parameters.out_path >>

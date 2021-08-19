@@ -11,7 +11,7 @@ parameters:
 
 steps:
   - restore_cache:
-      key: teak-orb-terraform-<< parameters.version >>
+      key: teak-orb-terraform-v2-<< parameters.version >>
   - run:
       name: Import Hashicorp signing key
       command: |
@@ -19,7 +19,7 @@ steps:
   - run:
       name: Install or Upgrade Terraform
       command: |
-        if [ ! -f terraform/terraform ] || [ `./terraform/terraform version | grep -o 'Terraform v[0-9]*\.[0-9]*\.[0-9]*' | sed 's/Terraform v//'` != << parameters.version >> ]; then
+        if [ ! -f ~/terraform/terraform ] || [ `~/terraform/terraform version | grep -o 'Terraform v[0-9]*\.[0-9]*\.[0-9]*' | sed 's/Terraform v//'` != << parameters.version >> ]; then
           wget https://releases.hashicorp.com/terraform/<< parameters.version >>/terraform_<< parameters.version >>_<< parameters.platform >>.zip
           wget https://releases.hashicorp.com/terraform/<< parameters.version >>/terraform_<< parameters.version >>_SHA256SUMS
           wget https://releases.hashicorp.com/terraform/<< parameters.version >>/terraform_<< parameters.version >>_SHA256SUMS.sig
@@ -39,9 +39,9 @@ steps:
             exit 1
           fi
 
-          unzip -o terraform_<< parameters.version >>_<< parameters.platform >>.zip -d terraform
+          unzip -o terraform_<< parameters.version >>_<< parameters.platform >>.zip -d ~/terraform
         fi
   - save_cache:
       key: teak-orb-terraform-<< parameters.version >>
       paths:
-        - terraform
+        - ~/terraform

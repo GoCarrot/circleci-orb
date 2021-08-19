@@ -40,13 +40,13 @@ steps:
 
         if [[ $workspace_parameter != "" ]]; then
           echo "[INFO] Provisioning workspace: $workspace"
-          ./terraform/terraform -chdir="$module_path" workspace select -no-color "$workspace" || terraform -chdir="$module_path" workspace new -no-color "$workspace"
+          ~/terraform/terraform -chdir="$module_path" workspace select -no-color "$workspace" || terraform -chdir="$module_path" workspace new -no-color "$workspace"
         else
           echo "[INFO] Using default workspace"
         fi
 
         mkdir -p << parameters.out_path >>
-        ./terraform/terraform -chdir="$module_path" plan -out=<< parameters.out_path >>/<< parameters.out_plan >> > << parameters.out_path >>/<< parameters.out_log >>
+        ~/terraform/terraform -chdir="$module_path" plan -out=<< parameters.out_path >>/<< parameters.out_plan >> > << parameters.out_path >>/<< parameters.out_log >>
         cat << parameters.out_path >>/<< parameters.out_log >>
   - persist_to_workspace:
       root: << parameters.out_path >>
