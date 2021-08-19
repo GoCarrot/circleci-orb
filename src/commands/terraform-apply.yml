@@ -32,7 +32,7 @@ steps:
       name: Prepare attach_workspace
       command: mkdir -p << parameters.path >>
   - attach_workspace:
-      at: << parameters.path >>
+      at: << parameters.plan_path >>
   - unless:
       condition: << parameters.dry_run >>
       steps:
@@ -64,4 +64,4 @@ steps:
         - run:
             name: Terraform Apply (Dry Run)
             command: |
-              ~/terraform/terraform show << parameters.path >>/<< parameters.plan >>
+              ~/terraform/terraform show << parameters.plan_path >>/<< parameters.plan >>
