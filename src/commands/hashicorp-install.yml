@@ -23,7 +23,7 @@ steps:
       command: |
         gpg --keyserver keyserver.ubuntu.com --recv 72D7468F
   - run:
-      name: Install or Upgrade Packer
+      name: Install or Upgrade << parameters.tool >>
       command: |
         if [ ! -f ~/<< parameters.tool >>/<< parameters.tool >> ] || [ `~/<< parameters.tool >>/<< parameters.tool >> version | grep -i -o '<< parameters.tool >> v[0-9]*\.[0-9]*\.[0-9]*' | sed 's/<< parameters.tool >> v//i'` != << parameters.version >> ]; then
           wget https://releases.hashicorp.com/<< parameters.tool >>/<< parameters.version >>/<< parameters.tool >>_<< parameters.version >>_<< parameters.platform >>.zip
