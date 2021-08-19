@@ -27,8 +27,8 @@ parameters:
 
   out_log:
     type: string
-    default: "teak-orb-terraform.apply.log"
-    description: "Name of the file the apply log should be stored in."
+    default: "teak-orb-packer.build.log"
+    description: "Name of the file the build log should be stored in."
 
   only:
     type: string
