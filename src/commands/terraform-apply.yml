@@ -57,7 +57,7 @@ steps:
                 echo "[INFO] Using default workspace"
               fi
 
-              ~/terraform/terraform -chdir="$module_path" apply -auto-approve << parameters.plan_path >>/<< parameters.plan >> | tee << parameters.out_log >>
+              ~/terraform/terraform -chdir="$module_path" apply -no-color -auto-approve << parameters.plan_path >>/<< parameters.plan >> | tee << parameters.out_log >>
         - store_artifacts:
             path: << parameters.out_log >>
   - when:
