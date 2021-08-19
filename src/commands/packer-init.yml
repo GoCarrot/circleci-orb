@@ -1,0 +1,25 @@
+description: "Run `packer init`"
+
+parameters:
+  path:
+    type: "string"
+    description: "Path to the packer module"
+    default: "."
+
+steps:
+  - restore_cache:
+      key: teak-orb-packer-cache
+  - run:
+      name: Packer Init
+      command: |
+        readonly module_path="<< parameters.path >>"
+        if [[ ! -d "$module_path" ]]; then
+          echo "Path does not exist: \"$module_path\""
+          exit 1
+        fi
+
+        ~/packer/packer init << parameters.path >>
+  - save_cache:
+      key: teak-orb-packer-cache
+      paths:
+        - ~/.packer.d
