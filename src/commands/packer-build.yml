@@ -1,0 +1,57 @@
+description: "Run `packer build`."
+
+parameters:
+  out_log:
+    type: string
+    default: "teak-orb-packer.build.log"
+    description: "Log file for build command"
+
+  out_path:
+    type: string
+    default: "/tmp/teak-orb-packer"
+    description: "Path log will be stored in"
+
+  path:
+    type: "string"
+    description: "Path to the packer file to build"
+
+  only:
+    type: string
+    description: "Specific list of builders to run"
+    default: ""
+
+  except:
+    type: string
+    description: "List of builders to omit"
+    default: ""
+
+  artifact_path:
+    type: string
+    description: "If set, will upload all files at the path as job artifacts"
+    default: ""
+
+steps:
+  - run:
+      name: Packer Build
+      command: |
+        mkdir -p << parameters.out_path >>
+
+        BUILD_ARGS="-color=false -timestamp-ui"
+
+        if [[ -n "<< parameters.only >>" ]]; then
+          BUILD_ARGS="$BUILD_ARGS -only=<< parameters.only >>"
+        fi
+
+        if [[ -n "<< parameters.except >>" ]]; then
+          BUILD_ARGS="$BUILD_ARGS -except=<< parameters.except >>"
+        fi
+
+        ~/packer/packer build $BUILD_ARGS << parameters.path >> | tee << parameters.out_path >>/<< parameters.out_log >>
+  - store_artifacts:
+      name: "Store log file"
+      path: << parameters.out_path >>/<< parameters.out_log >>
+  - when:
+      condition: << parameters.artifact_path >>
+      steps:
+        - store_artifacts:
+            path: << parameters.artifact_path >>
