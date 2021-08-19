@@ -45,6 +45,12 @@ parameters:
     description: "If set, will upload all files at the path as job artifacts"
     default: ""
 
+  var:
+    default: ''
+    description: "Comma separated list of vars to set, e.g. 'foo=bar,baz=boo'"
+    type: string
+
+
 steps:
   - checkout
   - packer-install:
@@ -59,3 +65,4 @@ steps:
       only: << parameters.only >>
       except: << parameters.except >>
       artifact_path: << parameters.artifact_path >>
+      var: << parameters.var >>

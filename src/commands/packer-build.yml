@@ -30,6 +30,11 @@ parameters:
     description: "If set, will upload all files at the path as job artifacts"
     default: ""
 
+  var:
+    default: ''
+    description: "Comma separated list of vars to set, e.g. 'foo=bar,baz=boo'"
+    type: string
+
 steps:
   - run:
       name: Packer Build
@@ -44,6 +49,12 @@ steps:
 
         if [[ -n "<< parameters.except >>" ]]; then
           BUILD_ARGS="$BUILD_ARGS -except=<< parameters.except >>"
+        fi
+
+        if [[ -n "<< parameters.var >>" ]]; then
+            for var in $(echo "<< parameters.var >>" | tr ',' '\n'); do
+                BUILD_ARGS="$BUILD_ARGS -var $var"
+            done
         fi
 
         ~/packer/packer build $BUILD_ARGS << parameters.path >> | tee << parameters.out_path >>/<< parameters.out_log >>
