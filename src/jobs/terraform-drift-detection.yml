@@ -14,10 +14,30 @@ parameters:
     type: string
     default: "linux_amd64"
 
+  github_releases_user:
+    type: string
+    default: ""
+    description: >
+      If set, instead of downloading from releases.hashicorp.com, will
+      download from a Github release for the specified user
+
+  gpg_key_id:
+    type: string
+    default: "72D7468F"
+    description: The fingerprint of the GPG key used to sign the release.
+
+  gpg_keyserver:
+    type: string
+    default: "keyserver.ubuntu.com"
+    description: "The keyserver to retrieve the GPG key from"
+
 steps:
   - checkout
   - terraform-install:
       version: << parameters.version >>
       platform: << parameters.platform >>
+      github_releases_user: << parameters.github_releases_user >>
+      gpg_key_id: << parameters.gpg_key_id >>
+      gpg_keyserver: << parameters.gpg_keyserver >>
   - terraform-init
   - terraform-drift-detection
