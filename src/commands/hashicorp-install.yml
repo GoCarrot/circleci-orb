@@ -15,20 +15,44 @@ parameters:
     default: "linux_amd64"
     description: "The platform the tool will be run on"
 
+  github_releases_user:
+    type: string
+    default: ""
+    description: >
+      If set, instead of downloading from releases.hashicorp.com, will
+      download from a Github release for the specified user
+
+  gpg_key_id:
+    type: string
+    default: "72D7468F"
+    description: The fingerprint of the GPG key used to sign the release.
+
+  gpg_keyserver:
+    type: string
+    default: "keyserver.ubuntu.com"
+    description: "The keyserver to retrieve the GPG key from"
+
 steps:
   - restore_cache:
       key: teak-orb-hashicorp-install-<< parameters.tool >>-<< parameters.version >>
   - run:
-      name: Import Hashicorp signing key
+      name: Import signing key
       command: |
-        gpg --keyserver keyserver.ubuntu.com --recv 72D7468F
+        gpg --keyserver << parameters.gpg_keyserver >> --recv << parameters.gpg_key_id >>
   - run:
       name: Install or Upgrade << parameters.tool >>
       command: |
         if [ ! -f ~/<< parameters.tool >>/<< parameters.tool >> ] || [ `~/<< parameters.tool >>/<< parameters.tool >> version | grep -i -o '<< parameters.tool >> v[0-9]*\.[0-9]*\.[0-9]*' | sed 's/<< parameters.tool >> v//i'` != << parameters.version >> ]; then
-          wget https://releases.hashicorp.com/<< parameters.tool >>/<< parameters.version >>/<< parameters.tool >>_<< parameters.version >>_<< parameters.platform >>.zip
-          wget https://releases.hashicorp.com/<< parameters.tool >>/<< parameters.version >>/<< parameters.tool >>_<< parameters.version >>_SHA256SUMS
-          wget https://releases.hashicorp.com/<< parameters.tool >>/<< parameters.version >>/<< parameters.tool >>_<< parameters.version >>_SHA256SUMS.sig
+
+          base_url="https://releases.hashicorp.com/<< parameters.tool >>/"
+          if [ -n "<< parameters.github_releases_user >>" ] ; then
+            echo "Using Github releases from << parameters.github_releases_user >>"
+            base_url="https://github.com/<< parameters.github_releases_user >>/<< parameters.tool >>/releases/download/"
+          fi
+
+          wget "$base_url/<< parameters.version >>/<< parameters.tool >>_<< parameters.version >>_<< parameters.platform >>.zip"
+          wget "$base_url/<< parameters.version >>/<< parameters.tool >>_<< parameters.version >>_SHA256SUMS"
+          wget "$base_url/<< parameters.version >>/<< parameters.tool >>_<< parameters.version >>_SHA256SUMS.sig"
 
           echo "Validating signatures..."
           if ! gpg --batch --verify << parameters.tool >>_<< parameters.version >>_SHA256SUMS.sig << parameters.tool >>_<< parameters.version >>_SHA256SUMS ; then
