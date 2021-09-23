@@ -35,6 +35,11 @@ parameters:
     description: "Comma separated list of vars to set, e.g. 'foo=bar,baz=boo'"
     type: string
 
+  packer_log:
+    default: '0'
+    description: "Set to 1 to enable verbose packer logging"
+    type: string
+
 steps:
   - run:
       name: Packer Build
@@ -57,7 +62,7 @@ steps:
             done
         fi
 
-        ~/packer/packer build $BUILD_ARGS << parameters.path >> | tee << parameters.out_path >>/<< parameters.out_log >>
+        PACKER_LOG=<< parameters.packer_log >> ~/packer/packer build $BUILD_ARGS << parameters.path >> | tee << parameters.out_path >>/<< parameters.out_log >>
   - store_artifacts:
       name: "Store log file"
       path: << parameters.out_path >>/<< parameters.out_log >>
