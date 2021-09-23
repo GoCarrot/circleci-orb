@@ -67,6 +67,10 @@ parameters:
     description: "Comma separated list of vars to set, e.g. 'foo=bar,baz=boo'"
     type: string
 
+  packer_log:
+    default: '0'
+    description: "Set to 1 to enable verbose packer logging"
+    type: string
 
 steps:
   - checkout
@@ -86,3 +90,4 @@ steps:
       except: << parameters.except >>
       artifact_path: << parameters.artifact_path >>
       var: << parameters.var >>
+      packer_log: << parameters.packer_log >>
