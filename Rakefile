@@ -35,7 +35,7 @@ desc 'Promote the version at dev:alpha to production and bump the patch release'
 namespace :promote do
   %w[patch minor major].each do |version|
     desc "Promote dev:alpha to production and bump the #{version} in version"
-    task task version.to_sym do
+    task version.to_sym do
       promote(label: 'dev:alpha', version: version)
     end
   end
