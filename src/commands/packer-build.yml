@@ -40,9 +40,15 @@ parameters:
     description: "Set to 1 to enable verbose packer logging"
     type: string
 
+  packer_working_directory:
+    default: '.'
+    description: "The directory packer should be run in, relative to the base directory of the project."
+    type: string
+
 steps:
   - run:
       name: Packer Build
+      working_directory: << parameters.packer_working_directory >>
       command: |
         mkdir -p << parameters.out_path >>
 

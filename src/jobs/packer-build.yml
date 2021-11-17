@@ -72,12 +72,11 @@ parameters:
     description: "Set to 1 to enable verbose packer logging"
     type: string
 
-  working_directory:
-    default: '~/project'
+  packer_working_directory:
+    default: '.'
+    description: "The directory packer should be run in, relative to the base directory of the project."
     type: string
 
-
-working_directory: << parameters.working_directory >>
 steps:
   - checkout
   - packer-install:
@@ -87,8 +86,10 @@ steps:
       gpg_key_id: << parameters.gpg_key_id >>
       gpg_keyserver: << parameters.gpg_keyserver >>
   - packer-init:
+      packer_working_directory: << parameters.packer_working_directory >>
       path: << parameters.path >>
   - packer-build:
+      packer_working_directory: << parameters.packer_working_directory >>
       out_log: << parameters.out_log >>
       out_path: << parameters.out_path >>
       path: << parameters.path >>

@@ -6,11 +6,17 @@ parameters:
     description: "Path to the packer module"
     default: "."
 
+  packer_working_directory:
+    default: '.'
+    description: "The directory packer should be run in, relative to the base directory of the project."
+    type: string
+
 steps:
   - restore_cache:
       key: teak-orb-packer-cache
   - run:
       name: Packer Init
+      working_directory: << parameters.packer_working_directory >>
       command: |
         readonly module_path="<< parameters.path >>"
         if [[ ! -d "$module_path" ]]; then
