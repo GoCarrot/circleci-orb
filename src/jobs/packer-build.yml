@@ -72,6 +72,12 @@ parameters:
     description: "Set to 1 to enable verbose packer logging"
     type: string
 
+  working_directory:
+    default: '~/project'
+    type: string
+
+
+working_directory: << parameters.working_directory >>
 steps:
   - checkout
   - packer-install:
