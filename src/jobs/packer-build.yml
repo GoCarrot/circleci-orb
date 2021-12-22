@@ -4,6 +4,8 @@ description: >
 docker:
   - image: cimg/base:2021.04
 
+resource_class: small
+
 circleci_ip_ranges: true
 
 parameters:
