@@ -19,7 +19,7 @@ parameters:
   date:
     type: string
     default: |
-      `git ls-files -z . | xargs -0 -n1 -I{} -- git log -1 --date=format:"%Y%m%d%H%M" --format="%ad" {} | sort -r | head -n 1`
+      `git ls-files -z . | xargs -0 -- git log -1 --date=format:"%Y%m%d%H%M" --format="%ad" -- | sort -r | head -n 1`
 
 steps:
   - when:
