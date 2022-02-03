@@ -1,0 +1,23 @@
+description: "Run `terraform output` and export string, number, and boolean outputs to TF_OUT_UPPER_CAMEL_CASE_OUTPUT_NAME env vars."
+
+parameters:
+  path:
+    type: "string"
+    description: "Path to the terraform module"
+    default: "."
+
+steps:
+  - run:
+      name: Terraform Output
+      command: |
+        readonly module_path="<< parameters.path >>"
+        if [[ ! -d "$module_path" ]]; then
+          echo "Path does not exist: \"$module_path\""
+          exit 1
+        fi
+
+        ~/terraform/terraform -chdir="$module_path" output -json \
+          | jq -r 'to_entries | map({key: .key | gsub("-"; "_") | ascii_upcase, value: .value.value, type: .value.value | type})
+            | map(select(.type == "string" or .type == "number" or .type == "boolean"))
+            | map("export TF_OUT_\(.key)=\(.value)")
+            | join("\n")' >> $BASH_ENV
