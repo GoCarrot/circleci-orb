@@ -13,6 +13,7 @@ parameters:
 steps:
   - run:
       command: |
+        mkdir -p /tmp/teak-orb
         PLAN_LOG=<< parameters.plan-log-url >>
         echo "{
             \"text\": \"${CIRCLE_PROJECT_REPONAME} ${CIRCLE_BRANCH} job on hold, waiting for approval.\",
