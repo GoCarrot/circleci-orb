@@ -34,7 +34,7 @@ steps:
                   },
                   {
                     \"type\": \"mrkdwn\",
-                    \"text\": "<https://app.circleci.com/pipelines/workflows/${CIRCLE_WORKFLOW_ID}|View Workflow>\"
+                    \"text\": \"<https://app.circleci.com/pipelines/workflows/${CIRCLE_WORKFLOW_ID}|View Workflow>\"
                   }
                 ]
               }
