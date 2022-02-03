@@ -6,3 +6,4 @@ description: |
 
 orbs:
   slack: circleci/slack@4
+  continuation: circleci/continuation@0.2

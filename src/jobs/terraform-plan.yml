@@ -57,10 +57,20 @@ parameters:
     default: "teak-orb-terraform.plan.log"
     description: "Name of the file the plan log should be stored in."
 
+  continue:
+    type: boolean
+    default: true
+    description: "Automatically trigger a CircleCI continuation when continuation_workflow_type is set."
+
   continuation_workflow_type:
     type: string
     description: "Prepares a continue_params.json file for use with https://circleci.com/developer/orbs/orb/circleci/continuation. Sets workflow-type pipeline parameter in continued workflow."
     default: ""
+
+  continuation_configuration_path:
+    type: string
+    description: The path to the configuration that will be passed to the continue API
+    default: ".circleci/continue.yml"
 
 steps:
   - checkout
@@ -83,3 +93,12 @@ steps:
       root: << parameters.out_path >>
       paths:
         - "*"
+  - when:
+      condition:
+        and:
+          - << parameters.continuation_workflow_type >>
+          - << parameters.continue >>
+      steps:
+        - continuation/continue:
+            configuration_path: << parameters.continuation_configuration_path >>
+            parameters: continue_params.json
