@@ -49,7 +49,7 @@ parameters:
 
   out_path:
     type: string
-    description: "Path the planfile will be stored in. Will be persisted to workspace."
+    description: "Path the planfile will be stored in. Will be persisted to workspace. Must be absolute."
     default: "/tmp/teak-orb-terraform"
 
   out_log:
