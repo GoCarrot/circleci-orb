@@ -65,7 +65,6 @@ steps:
       condition: << parameters.continuation_workflow_type >>
       steps:
         - run:
-            when: << parameters.continuation_workflow_type >>
             command: |
               if [ -f << parameters.out_path >>/tf_plan_changes ]; then
                 echo "{\"run-apply\":true, \"cache-id\": \"${CIRCLE_WORKFLOW_ID}\", \"workflow-type\":\"<< parameters.continuation_workflow_type >>\", \"plan-log-url\":\"${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}<< parameters.out_path >>/<< parameters.out_log >>\"}" > continue_params.json
@@ -73,7 +72,6 @@ steps:
                 echo "{\"workflow-type\":\"<< parameters.continuation_workflow_type >>\"}" > continue_params.json
               fi
         - save_cache:
-            when: << parameters.continuation_workflow_type >>
             key: "{{ .Environment.CIRCLE_WORKFLOW_ID }}"
             paths:
               - << parameters.out_path >>/<< parameters.out_plan >>
