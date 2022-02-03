@@ -46,7 +46,16 @@ steps:
         fi
 
         mkdir -p << parameters.out_path >>
-        ~/terraform/terraform -chdir="$module_path" plan -no-color -out=<< parameters.out_path >>/<< parameters.out_plan >> | tee << parameters.out_path >>/<< parameters.out_log >>
+        set +e
+        ~/terraform/terraform -chdir="$module_path" plan -detailed-exitcode -no-color -out=<< parameters.out_path >>/<< parameters.out_plan >> | tee << parameters.out_path >>/<< parameters.out_log >>
+        plan_retval=$?
+        set -e
+        if [ $plan_retval -eq 1 ]; then
+          exit 1
+        fi
+        if [ $plan_retval -eq 2 ]; then
+          touch << parameters.out_path >>/tf_plan_changes
+        fi
   - store_artifacts:
       path: << parameters.out_path >>/<< parameters.out_plan >>
   - store_artifacts:
