@@ -12,6 +12,7 @@ parameters:
 
 steps:
   - run:
+      name: "Generate notification template"
       command: |
         mkdir -p /tmp/teak-orb
         PLAN_LOG=<< parameters.plan-log-url >>
