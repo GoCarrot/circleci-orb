@@ -3,7 +3,7 @@ description: "Run `terraform plan`."
 parameters:
   out_plan:
     type: string
-    default: "teak-orb-terraform.plan"
+    default: "teak-orb-terraform.tfplan"
 
   out_log:
     type: string
