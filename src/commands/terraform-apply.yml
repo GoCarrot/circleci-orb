@@ -28,11 +28,6 @@ parameters:
     default: "."
 
 steps:
-  - run:
-      name: Prepare attach_workspace
-      command: mkdir -p << parameters.path >>
-  - attach_workspace:
-      at: << parameters.plan_path >>
   - unless:
       condition: << parameters.dry_run >>
       steps:

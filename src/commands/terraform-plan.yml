@@ -47,11 +47,6 @@ steps:
 
         mkdir -p << parameters.out_path >>
         ~/terraform/terraform -chdir="$module_path" plan -no-color -out=<< parameters.out_path >>/<< parameters.out_plan >> | tee << parameters.out_path >>/<< parameters.out_log >>
-  - persist_to_workspace:
-      root: << parameters.out_path >>
-      paths:
-        - << parameters.out_plan >>
-        - << parameters.out_log >>
   - store_artifacts:
       path: << parameters.out_path >>/<< parameters.out_plan >>
   - store_artifacts:

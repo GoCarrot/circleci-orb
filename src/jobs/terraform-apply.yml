@@ -72,6 +72,11 @@ steps:
       gpg_keyserver: << parameters.gpg_keyserver >>
   - terraform-init:
       path: << parameters.path >>
+  - run:
+      name: Prepare attach_workspace
+      command: mkdir -p << parameters.path >>
+  - attach_workspace:
+      at: << parameters.plan_path >>
   - terraform-apply:
       plan: << parameters.plan >>
       out_log: << parameters.out_log >>
