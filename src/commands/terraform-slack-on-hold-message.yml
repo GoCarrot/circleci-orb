@@ -1,0 +1,43 @@
+description: "Exports our standard hold notification for terraform apply to an env var."
+
+parameters:
+  plan-log-url:
+    type: "string"
+    description: "URL for the log file from running terraform plan."
+
+  template-name:
+    type: "string"
+    description: "Environment variable name to export our template to."
+    default: "TEAK_TF_ON_HOLD"
+
+steps:
+  - run:
+      command: |
+        PLAN_LOG=<< parameters.plan-log-url >>
+        echo "{
+            \"text\": \"${CIRCLE_PROJECT_REPONAME} ${CIRCLE_BRANCH} job on hold, waiting for approval.\",
+            \"blocks\": [
+              {
+                \"type\": \"header\",
+                \"text\": {
+                  \"type\": \"plain_text\",
+                  \"text\": \"${CIRCLE_PROJECT_REPONAME} ${CIRCLE_BRANCH} job on hold, waiting for approval. :raised_hand:\",
+                  \"emoji\": true
+                }
+              },
+              {
+                \"type\": \"section\",
+                \"fields\": [
+                  {
+                    \"type\": \"mrkdwn\",
+                    \"text\": \"<${PLAN_LOG}|Terraform Plan Log>\"
+                  },
+                  {
+                    \"type\": \"mrkdwn\",
+                    \"text\": "<https://app.circleci.com/pipelines/workflows/${CIRCLE_WORKFLOW_ID}|View Workflow>\"
+                  }
+                ]
+              }
+            ]
+          }" > /tmp/teak-orb/tf-plan-slack-template.json
+          echo 'export << parameters.template-name >>=$(cat /tmp/teak-orb/tf-plan-slack-template.json)' >> $BASH_ENV
