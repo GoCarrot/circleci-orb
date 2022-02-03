@@ -27,7 +27,17 @@ parameters:
     description: "Path to the terraform module"
     default: "."
 
+  continuation_cache:
+    type: "string"
+    description: "The cache key the plan was stored in for continuations (https://circleci.com/developer/orbs/orb/circleci/continuation)"
+    default: ""
+
 steps:
+  - when:
+      condition: << parameters.continuation_cache >>
+      steps:
+        - restore_cache:
+            key: << parameters.continuation_cache >>
   - unless:
       condition: << parameters.dry_run >>
       steps:

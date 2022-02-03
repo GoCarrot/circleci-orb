@@ -23,6 +23,11 @@ parameters:
     description: "Path to the terraform module"
     default: "."
 
+  continuation_workflow_type:
+    type: string
+    description: "Prepares a continue_params.json file for use with https://circleci.com/developer/orbs/orb/circleci/continuation. Sets workflow-type pipeline parameter in continued workflow."
+    default: ""
+
 steps:
   - run:
       name: Terraform Plan
@@ -56,6 +61,19 @@ steps:
         if [ $plan_retval -eq 2 ]; then
           touch << parameters.out_path >>/tf_plan_changes
         fi
+  - run:
+      when: << parameters.continuation_workflow_type >>
+      command: |
+        if [ -f << parameters.out_path >>/tf_plan_changes ]; then
+          echo "{\"run-apply\":true, \"cache-id\": \"${CIRCLE_WORKFLOW_ID}\", \"workflow-type\":\"<< parameters.continuation_workflow_type >>\", \"plan-log-url\":\"${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}<< parameters.out_path >>/<< parameters.out_log >>\"}" > continue_params.json
+        else
+          echo "{\"workflow-type\":\"<< parameters.continuation_workflow_type >>\"}" > continue_params.json
+        fi
+  - save_cache:
+      when: << parameters.continuation_workflow_type >>
+      key: "{{ .Environment.CIRCLE_WORKFLOW_ID }}"
+      paths:
+        - << parameters.out_path >>/<< parameters.out_plan >>
   - store_artifacts:
       path: << parameters.out_path >>/<< parameters.out_plan >>
   - store_artifacts:

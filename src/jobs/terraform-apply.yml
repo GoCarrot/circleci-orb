@@ -62,6 +62,11 @@ parameters:
     default: false
     description: "When true will show what apply would have done, but will not run apply."
 
+  continuation_cache:
+    type: "string"
+    description: "The cache key the plan was stored in for continuations (https://circleci.com/developer/orbs/orb/circleci/continuation)"
+    default: ""
+
 steps:
   - checkout
   - terraform-install:
@@ -84,3 +89,4 @@ steps:
       workspace: << parameters.workspace >>
       path: << parameters.path >>
       dry_run: << parameters.dry_run >>
+      continuation_cache: << parameters.continuation_cache >>
