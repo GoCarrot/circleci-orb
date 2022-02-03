@@ -76,5 +76,4 @@ steps:
   - persist_to_workspace:
       root: << parameters.out_path >>
       paths:
-        - << parameters.out_plan >>
-        - << parameters.out_log >>
+        - *
