@@ -106,6 +106,8 @@ steps:
       steps:
         - run:
             name: Terraform Apply
+            environment:
+              module_path: << parameters.path >>
             command: |
               ~/terraform/terraform -chdir="$module_path" apply -no-color << parameters.plan_path >>/<< parameters.plan >> | tee << parameters.out_log >>
         - when:
