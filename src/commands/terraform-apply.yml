@@ -99,6 +99,7 @@ steps:
       name: "Set terraform workspace"
       environment:
         workspace_parameter: << parameters.workspace >>
+        module_path: << parameters.path >>
       command: << include(scripts/workspace.sh) >>
   - unless:
       condition: << parameters.dry_run >>
@@ -106,12 +107,6 @@ steps:
         - run:
             name: Terraform Apply
             command: |
-              readonly module_path="<< parameters.path >>"
-              if [[ ! -d "$module_path" ]]; then
-                echo "Path does not exist: \"$module_path\""
-                exit 1
-              fi
-
               ~/terraform/terraform -chdir="$module_path" apply -no-color << parameters.plan_path >>/<< parameters.plan >> | tee << parameters.out_log >>
         - when:
             condition: << parameters.include_output >>
