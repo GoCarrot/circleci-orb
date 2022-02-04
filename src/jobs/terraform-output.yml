@@ -1,0 +1,65 @@
+description: "Run `terraform output` and export string, number, and boolean outputs to TF_OUT_UPPER_CAMEL_CASE_OUTPUT_NAME env vars."
+
+docker:
+  - image: cimg/base:2021.04
+
+parameters:
+  version:
+    description: "Version of terraform to use"
+    type: string
+    default: "1.0.5"
+
+  platform:
+    description: "Platform terraform will run on"
+    type: string
+    default: "linux_amd64"
+
+  github_releases_user:
+    type: string
+    default: ""
+    description: >
+      If set, instead of downloading from releases.hashicorp.com, will
+      download from a Github release for the specified user
+
+  gpg_key_id:
+    type: string
+    default: "72D7468F"
+    description: The fingerprint of the GPG key used to sign the release.
+
+  gpg_keyserver:
+    type: string
+    default: "keyserver.ubuntu.com"
+    description: "The keyserver to retrieve the GPG key from"
+
+  path:
+    type: "string"
+    description: "Path to the terraform module"
+    default: "."
+
+  workspace:
+    type: string
+    description: Name of the terraform workspace
+    default: ""
+
+  plan_path:
+    type: string
+    description: "Path the output is stored in."
+    default: "/tmp/teak-orb-terraform"
+
+  use_circle_workspace:
+    type: boolean
+    default: true
+    description: "Use plan_path as a circleci workspace."
+
+steps:
+  - checkout
+  - terraform-output:
+      version: << parameters.version >>
+      platform: << parameters.platform >>
+      github_releases_user: << parameters.github_releases_user >>
+      gpg_key_id: << parameters.gpg_key_id >>
+      gpg_keyserver: << parameters.gpg_keyserver >>
+      path: << parameters.path >>
+      workspace: << parameters.workspace >>
+      plan_path: << parameters.plan_path >>
+      use_circle_workspace: << parameters.use_circle_workspace >>
