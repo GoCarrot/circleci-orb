@@ -57,6 +57,14 @@ steps:
       gpg_keyserver: << parameters.gpg_keyserver >>
   - terraform-init:
       path: << parameters.path >>
+  - when:
+      condition: << parameters.use_circle_workspace >>
+      steps:
+        - run:
+            name: Prepare attach_workspace
+            command: mkdir -p << parameters.path >>
+        - attach_workspace:
+            at: << parameters.plan_path >>
   - run:
       name: "Set terraform workspace"
       environment:
