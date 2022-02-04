@@ -5,4 +5,3 @@
     | map("export TF_OUT_\(.key)=\(.value)")
     | join("\n")' > ${PLAN_PATH}/outputs.txt
 cat ${PLAN_PATH}/outputs.txt >> $BASH_ENV
-cat ${PLAN_PATH}/outputs.txt
