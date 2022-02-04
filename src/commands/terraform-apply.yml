@@ -95,6 +95,11 @@ steps:
             command: mkdir -p << parameters.path >>
         - attach_workspace:
             at: << parameters.plan_path >>
+  - run:
+      name: "Set terraform workspace"
+      environment:
+        workspace_parameter: << parameters.workspace >>
+      command: << include(scripts/workspace.sh) >>
   - unless:
       condition: << parameters.dry_run >>
       steps:
@@ -106,15 +111,16 @@ steps:
                 echo "Path does not exist: \"$module_path\""
                 exit 1
               fi
-              INCLUDE_OUTPUT=<< parameters.include_output >>
-              echo "Include output: $INCLUDE_OUTPUT"
-
-              PLAN_PATH=<< parameters.plan_path >>
-
-              << include(scripts/workspace.sh) >>
 
               ~/terraform/terraform -chdir="$module_path" apply -no-color << parameters.plan_path >>/<< parameters.plan >> | tee << parameters.out_log >>
-
+        - when:
+            condition: << parameters.include_output >>
+            steps:
+              - run:
+                  name: "Terraform output"
+                  environment:
+                    PLAN_PATH: << parameters.plan_path >>
+                  command: << include(scripts/output.sh) >>
         - store_artifacts:
             path: << parameters.out_log >>
         - when:

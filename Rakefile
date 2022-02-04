@@ -7,7 +7,7 @@ ORB_NAME = 'sdk-utils'.freeze
 
 def with_packed_orb
   Tempfile.open('orb') do |file|
-    `circleci config pack src > #{file.path}`
+    `circleci orb pack src > #{file.path}`
     puts "Packed orb to `#{file.path}`"
     yield file.path
   end

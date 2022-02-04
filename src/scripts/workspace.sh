@@ -1,4 +1,3 @@
-readonly workspace_parameter="<< parameters.workspace >>"
 readonly workspace="${TF_WORKSPACE:-$workspace_parameter}"
 export workspace
 unset TF_WORKSPACE
