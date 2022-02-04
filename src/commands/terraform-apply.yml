@@ -114,6 +114,7 @@ steps:
               - run:
                   name: "Terraform output"
                   environment:
+                    module_path: << parameters.path >>
                     PLAN_PATH: << parameters.plan_path >>
                   command: << include(scripts/output.sh) >>
         - store_artifacts:
