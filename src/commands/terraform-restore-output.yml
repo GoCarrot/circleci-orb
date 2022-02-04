@@ -1,0 +1,22 @@
+description: "Restores terraform output persisted from a previous job into $BASH_ENV"
+
+parameters:
+  plan_path:
+    type: string
+    description: "Path the output is stored in."
+    default: "/tmp/teak-orb-terraform"
+  use_circle_workspace:
+    type: boolean
+    default: true
+    description: "Use plan_path as a circleci workspace."
+
+steps:
+  - when:
+      condition: << parameters.use_circle_workspace >>
+      steps:
+        - attach_workspace:
+            at: /tmp/teak-orb-terraform
+  - run:
+      name: Apply Terraform Output
+      command: |
+        cat << parameters.plan_path >>/outputs.txt >> $BASH_ENV
