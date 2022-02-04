@@ -1,43 +1,100 @@
 description: "Run `terraform apply`."
 
 parameters:
-  plan:
+  version:
+    description: "Version of terraform to use"
     type: string
-    default: "teak-orb-terraform.tfplan"
+    default: "1.0.5"
 
-  out_log:
+  platform:
+    description: "Platform terraform will run on"
     type: string
-    default: "teak-orb-terraform.apply.log"
+    default: "linux_amd64"
 
-  plan_path:
+  github_releases_user:
     type: string
-    default: "/tmp/teak-orb-terraform"
-
-  dry_run:
-    type: boolean
-    default: false
-
-  workspace:
-    type: string
-    description: Name of the terraform workspace
     default: ""
+    description: >
+      If set, instead of downloading from releases.hashicorp.com, will
+      download from a Github release for the specified user
+
+  gpg_key_id:
+    type: string
+    default: "72D7468F"
+    description: The fingerprint of the GPG key used to sign the release.
+
+  gpg_keyserver:
+    type: string
+    default: "keyserver.ubuntu.com"
+    description: "The keyserver to retrieve the GPG key from"
 
   path:
     type: "string"
     description: "Path to the terraform module"
     default: "."
 
+  workspace:
+    type: "string"
+    description: Name of the terraform workspace
+    default: ""
+
+  plan:
+    type: string
+    default: "teak-orb-terraform.tfplan"
+    description: "The name of the planfile to apply."
+
+  plan_path:
+    type: string
+    description: "Path the planfile is stored in. Should be persisted from a terraform-plan job or command."
+    default: "/tmp/teak-orb-terraform"
+
+  out_log:
+    type: string
+    default: "teak-orb-terraform.apply.log"
+    description: "Name of the file the apply log should be stored in."
+
+  dry_run:
+    type: boolean
+    default: false
+    description: "When true will show what apply would have done, but will not run apply."
+
   continuation_cache:
     type: "string"
     description: "The cache key the plan was stored in for continuations (https://circleci.com/developer/orbs/orb/circleci/continuation)"
     default: ""
 
+  include_output:
+    type: boolean
+    default: false
+    description: "Run `terraform output` and export string, number, and boolean outputs to TF_OUT_UPPER_CAMEL_CASE_OUTPUT_NAME env vars and to plan_path/output.txt ready to cat into $BASH_ENV"
+
+  use_circle_workspace:
+    type: boolean
+    default: true
+    description: "Use plan_path as a circleci workspace."
+
 steps:
+  - terraform-install:
+      version: << parameters.version >>
+      platform: << parameters.platform >>
+      github_releases_user: << parameters.github_releases_user >>
+      gpg_key_id: << parameters.gpg_key_id >>
+      gpg_keyserver: << parameters.gpg_keyserver >>
+  - terraform-init:
+      path: << parameters.path >>
   - when:
       condition: << parameters.continuation_cache >>
       steps:
         - restore_cache:
             key: << parameters.continuation_cache >>
+  - when:
+      condition: << parameters.use_circle_workspace >>
+      steps:
+        - run:
+            name: Prepare attach_workspace
+            command: mkdir -p << parameters.path >>
+        - attach_workspace:
+            at: << parameters.plan_path >>
   - unless:
       condition: << parameters.dry_run >>
       steps:
@@ -49,22 +106,26 @@ steps:
                 echo "Path does not exist: \"$module_path\""
                 exit 1
               fi
+              INCLUDE_OUTPUT=<< parameters.include_output >>
+              echo "Include output: $INCLUDE_OUTPUT"
 
-              readonly workspace_parameter="<< parameters.workspace >>"
-              readonly workspace="${TF_WORKSPACE:-$workspace_parameter}"
-              export workspace
-              unset TF_WORKSPACE
+              PLAN_PATH=<< parameters.plan_path >>
 
-              if [[ $workspace_parameter != "" ]]; then
-                echo "[INFO] Provisioning workspace: $workspace"
-                ~/terraform/terraform -chdir="$module_path" workspace select -no-color "$workspace" || ~/terraform/terraform -chdir="$module_path" workspace new -no-color "$workspace"
-              else
-                echo "[INFO] Using default workspace"
-              fi
+              << include(scripts/workspace.sh) >>
 
               ~/terraform/terraform -chdir="$module_path" apply -no-color << parameters.plan_path >>/<< parameters.plan >> | tee << parameters.out_log >>
+              <<#parameters.include_output>>
+              << include(scripts/output.sh) >>
+              <</parameters.include_output>>
         - store_artifacts:
             path: << parameters.out_log >>
+        - when:
+            condition: << parameters.use_circle_workspace >>
+            steps:
+              - persist_to_workspace:
+                  root: << parameters.plan_path >>
+                  paths:
+                    - "*"
   - when:
       condition: << parameters.dry_run >>
       steps:

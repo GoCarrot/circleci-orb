@@ -67,22 +67,24 @@ parameters:
     description: "The cache key the plan was stored in for continuations (https://circleci.com/developer/orbs/orb/circleci/continuation)"
     default: ""
 
+  include_output:
+    type: boolean
+    default: false
+    description: "Run `terraform output` and export string, number, and boolean outputs to TF_OUT_UPPER_CAMEL_CASE_OUTPUT_NAME env vars and to plan_path/output.txt ready to cat into $BASH_ENV"
+
+  use_circle_workspace:
+    type: boolean
+    default: true
+    description: "Use plan_path as a circleci workspace."
+
 steps:
   - checkout
-  - terraform-install:
+  - terraform-apply:
       version: << parameters.version >>
       platform: << parameters.platform >>
       github_releases_user: << parameters.github_releases_user >>
       gpg_key_id: << parameters.gpg_key_id >>
       gpg_keyserver: << parameters.gpg_keyserver >>
-  - terraform-init:
-      path: << parameters.path >>
-  - run:
-      name: Prepare attach_workspace
-      command: mkdir -p << parameters.path >>
-  - attach_workspace:
-      at: << parameters.plan_path >>
-  - terraform-apply:
       plan: << parameters.plan >>
       out_log: << parameters.out_log >>
       plan_path: << parameters.plan_path >>
@@ -90,3 +92,5 @@ steps:
       path: << parameters.path >>
       dry_run: << parameters.dry_run >>
       continuation_cache: << parameters.continuation_cache >>
+      include_output: << parameters.include_output >>
+      use_circle_workspace: << parameters.use_circle_workspace >>

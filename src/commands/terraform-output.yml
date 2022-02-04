@@ -11,6 +11,11 @@ parameters:
     description: Name of the terraform workspace
     default: ""
 
+  persist_to_workspace:
+    type: boolean
+    default: false
+    description: "If true will persist outputs ready for $BASH_ENV into /tmp/teak-orb-terraform/outputs.txt"
+
 steps:
   - run:
       name: Terraform Output
@@ -33,8 +38,19 @@ steps:
           echo "[INFO] Using default workspace"
         fi
 
+        mkdir -p /tmp/teak-orb-terraform
+
         ~/terraform/terraform -chdir="$module_path" output -json \
           | jq -r 'to_entries | map({key: .key | gsub("-"; "_") | ascii_upcase, value: .value.value, type: .value.value | type})
             | map(select(.type == "string" or .type == "number" or .type == "boolean"))
             | map("export TF_OUT_\(.key)=\(.value)")
-            | join("\n")' >> $BASH_ENV
+            | join("\n")' > /tmp/teak-orb-terraform/outputs.txt
+
+        cat /tmp/teak-orb-terraform/outputs.txt >> $BASH_ENV
+  - when:
+      condition: << parameters.persist_to_workspace >>
+      steps:
+        - persist_to_workspace:
+            root: /tmp/teak-orb-terraform
+            paths:
+              - outputs.txt
