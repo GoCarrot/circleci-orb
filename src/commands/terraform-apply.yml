@@ -114,9 +114,7 @@ steps:
               << include(scripts/workspace.sh) >>
 
               ~/terraform/terraform -chdir="$module_path" apply -no-color << parameters.plan_path >>/<< parameters.plan >> | tee << parameters.out_log >>
-              <<#parameters.include_output>>
-              << include(scripts/output.sh) >>
-              <</parameters.include_output>>
+
         - store_artifacts:
             path: << parameters.out_log >>
         - when:
