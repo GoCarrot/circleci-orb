@@ -34,15 +34,15 @@ parameters:
 
 steps:
   - restore_cache:
-      key: teak-orb-hashicorp-install-<< parameters.tool >>-<< parameters.version >>
-  - run:
-      name: Import signing key
-      command: |
-        gpg --keyserver << parameters.gpg_keyserver >> --recv << parameters.gpg_key_id >>
+      keys:
+        - teak-orb-hashicorp-install-<< parameters.tool >>-<< parameters.version >>-<< parameters.github_releases_user >>
+        - teak-orb-hashicorp-install-<< parameters.tool >>-<< parameters.version >>
   - run:
       name: Install or Upgrade << parameters.tool >>
       command: |
         if [ ! -f ~/<< parameters.tool >>/<< parameters.tool >> ] || [ `~/<< parameters.tool >>/<< parameters.tool >> version | grep -i -o -E '<< parameters.tool >> v[0-9]*\.[0-9]*\.[0-9]*(-[a-zA-Z0-9]+)?' | sed 's/<< parameters.tool >> v//i'` != << parameters.version >> ]; then
+          echo "Importing signing key"
+          gpg --keyserver << parameters.gpg_keyserver >> --recv << parameters.gpg_key_id >>
 
           base_url="https://releases.hashicorp.com/<< parameters.tool >>/<< parameters.version >>"
           if [ -n "<< parameters.github_releases_user >>" ] ; then
@@ -72,6 +72,6 @@ steps:
           unzip -o << parameters.tool >>_<< parameters.version >>_<< parameters.platform >>.zip -d ~/<< parameters.tool >>
         fi
   - save_cache:
-      key: teak-orb-hashicorp-install-<< parameters.tool >>-<< parameters.version >>
+      key: teak-orb-hashicorp-install-<< parameters.tool >>-<< parameters.version >>--<< parameters.github_releases_user >>
       paths:
         - ~/<< parameters.tool >>
