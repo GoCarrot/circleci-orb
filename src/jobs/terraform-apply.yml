@@ -2,7 +2,7 @@ description: >
   Run terraform apply, using a planfile from a prior terrafrom plan.
 
 docker:
-  - image: cimg/base:2021.04
+  - image: cimg/base:stable
 
 parameters:
   version:

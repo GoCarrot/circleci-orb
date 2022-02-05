@@ -2,7 +2,7 @@ description: >
   Run terraform plan, outputing a planfile for later application to our artifacts and workspace.
 
 docker:
-  - image: cimg/base:2021.04
+  - image: cimg/base:stable
 
 parameters:
   version:

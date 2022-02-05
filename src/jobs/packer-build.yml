@@ -2,7 +2,7 @@ description: >
   Run packer build
 
 docker:
-  - image: cimg/base:2021.04
+  - image: cimg/base:stable
 
 resource_class: small
 

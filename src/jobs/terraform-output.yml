@@ -1,7 +1,7 @@
 description: "Run `terraform output` and export string, number, and boolean outputs to TF_OUT_UPPER_CAMEL_CASE_OUTPUT_NAME env vars."
 
 docker:
-  - image: cimg/base:2021.04
+  - image: cimg/base:stable
 
 parameters:
   version:

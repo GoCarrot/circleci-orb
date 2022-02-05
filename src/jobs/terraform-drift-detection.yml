@@ -3,12 +3,12 @@ description: >
   This job will fail if there is any detected drift.
 
 docker:
-  - image: cimg/base:2021.04
+  - image: cimg/base:stable
 
 parameters:
   version:
     type: string
-    default: "0.15.4"
+    default: "1.0.5"
 
   platform:
     type: string
