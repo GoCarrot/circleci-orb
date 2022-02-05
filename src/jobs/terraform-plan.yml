@@ -72,6 +72,11 @@ parameters:
     description: The path to the configuration that will be passed to the continue API
     default: ".circleci/continue.yml"
 
+  before_continuation_steps:
+    type: steps
+    description: "Steps to execute prior to continuing the workflow, can modify continue_params.json"
+    default: []
+
 steps:
   - checkout
   - terraform-install:
@@ -99,6 +104,9 @@ steps:
           - << parameters.continuation_workflow_type >>
           - << parameters.continue >>
       steps:
+        - when:
+            condition: << parameters.before_continuation_steps >>
+            steps: << parameters.before_continuation_steps >>
         - continuation/continue:
             configuration_path: << parameters.continuation_configuration_path >>
             parameters: continue_params.json
