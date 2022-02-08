@@ -23,6 +23,11 @@ parameters:
     description: "Path to the terraform module"
     default: "."
 
+  var:
+    default: ''
+    description: "Comma separated list of vars to set, e.g. 'foo=bar,baz=boo'"
+    type: string
+
   continuation_workflow_type:
     type: string
     description: "Prepares a continue_params.json file for use with https://circleci.com/developer/orbs/orb/circleci/continuation. Sets workflow-type pipeline parameter in continued workflow."
