@@ -57,6 +57,11 @@ parameters:
     default: "teak-orb-terraform.plan.log"
     description: "Name of the file the plan log should be stored in."
 
+  var:
+    default: ''
+    description: "Comma separated list of vars to set, e.g. 'foo=bar,baz=boo'"
+    type: string
+
   continue:
     type: boolean
     default: true
@@ -93,6 +98,7 @@ steps:
       out_path: << parameters.out_path >>
       workspace: << parameters.workspace >>
       path: << parameters.path >>
+      var: << parameters.var >>
       continuation_workflow_type: << parameters.continuation_workflow_type >>
   - persist_to_workspace:
       root: << parameters.out_path >>

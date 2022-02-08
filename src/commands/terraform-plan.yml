@@ -50,9 +50,16 @@ steps:
           echo "[INFO] Using default workspace"
         fi
 
+        PLAN_ARGS="-no-color -detailed-exitcode"
+        if [[ -n "<< parameters.var >>" ]]; then
+          for var in $(echo "<< parameters.var >>" | tr ',' '\n'); do
+            PLAN_ARGS="$PLAN_ARGS -var $var"
+          done
+        fi
+
         mkdir -p << parameters.out_path >>
         set +e
-        ~/terraform/terraform -chdir="$module_path" plan -detailed-exitcode -no-color -out=<< parameters.out_path >>/<< parameters.out_plan >> | tee << parameters.out_path >>/<< parameters.out_log >>
+        ~/terraform/terraform -chdir="$module_path" plan $PLAN_ARGS -out=<< parameters.out_path >>/<< parameters.out_plan >> | tee << parameters.out_path >>/<< parameters.out_log >>
         plan_retval=$?
         set -e
         if [ $plan_retval -eq 1 ]; then
