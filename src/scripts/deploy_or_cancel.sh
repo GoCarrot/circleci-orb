@@ -1,15 +1,15 @@
 #!/bin/bash -eo pipefail
 
 SetupEnv() {
-  export D_REGION=$(echo "${D_REGION}")
-  export D_SERVICE_NAME=$(echo "${D_SERVICE_NAME}")
-  export D_ACCOUNT_NAME=$(echo "${D_ACCOUNT_NAME}")
-  export D_ENVIRONMENT=$(echo "${D_ENVIRONMENT}")
-  export D_AMI_ID=$(echo "${D_AMI_ID}")
-  export D_ARCHITECTURE=$(echo "${D_ARCHITECTURE}")
-  export D_MANIFEST_PATH=$(echo "${D_MANIFEST_PATH}")
-  export D_ORGANIZATION_PREFIX=$(echo "${D_ORGANIZATION_PREFIX}")
-  D_DEPLOY_CONFIG_FILE=$(echo "${D_DEPLOY_CONFIG_FILE}")
+  export D_REGION=$(eval echo "${D_REGION}")
+  export D_SERVICE_NAME=$(eval echo "${D_SERVICE_NAME}")
+  export D_ACCOUNT_NAME=$(eval echo "${D_ACCOUNT_NAME}")
+  export D_ENVIRONMENT=$(eval echo "${D_ENVIRONMENT}")
+  export D_AMI_ID=$(eval echo "${D_AMI_ID}")
+  export D_ARCHITECTURE=$(eval echo "${D_ARCHITECTURE}")
+  export D_MANIFEST_PATH=$(eval echo "${D_MANIFEST_PATH}")
+  export D_ORGANIZATION_PREFIX=$(eval echo "${D_ORGANIZATION_PREFIX}")
+  D_DEPLOY_CONFIG_FILE=$(eval echo "${D_DEPLOY_CONFIG_FILE}")
   export AWS_REGION=$D_REGION
 }
 
