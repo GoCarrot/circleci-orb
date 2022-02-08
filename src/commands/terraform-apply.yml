@@ -73,6 +73,11 @@ parameters:
     default: true
     description: "Use plan_path as a circleci workspace."
 
+  before_apply_steps:
+    type: steps
+    description: "Steps to execute prior to running terraform apply, but after terraform init."
+    default: []
+
 steps:
   - terraform-install:
       version: << parameters.version >>
@@ -101,6 +106,9 @@ steps:
         workspace_parameter: << parameters.workspace >>
         module_path: << parameters.path >>
       command: << include(scripts/workspace.sh) >>
+  - when:
+      condition: << parameters.before_apply_steps >>
+      steps: << parameters.before_apply_steps >>
   - unless:
       condition: << parameters.dry_run >>
       steps:

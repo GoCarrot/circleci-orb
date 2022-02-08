@@ -77,6 +77,11 @@ parameters:
     default: true
     description: "Use plan_path as a circleci workspace."
 
+  before_apply_steps:
+    type: steps
+    description: "Steps to execute prior to running terraform apply, but after terraform init."
+    default: []
+
 steps:
   - checkout
   - terraform-apply:
@@ -94,3 +99,4 @@ steps:
       continuation_cache: << parameters.continuation_cache >>
       include_output: << parameters.include_output >>
       use_circle_workspace: << parameters.use_circle_workspace >>
+      before_apply_steps: << parameters.before_apply_steps >>
