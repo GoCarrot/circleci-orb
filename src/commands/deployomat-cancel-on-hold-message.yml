@@ -1,0 +1,45 @@
+description: "Exports our standard hold notification for cancelling a deploy to an env var."
+
+parameters:
+  template_name:
+    type: "string"
+    description: "Environment variable name to export our template to."
+    default: "TEAK_DEPLOY_CANCEL_ON_HOLD"
+  service_name:
+    type: "string"
+    description: "Name of the service being deployed"
+    default: ""
+
+steps:
+  - run:
+      name: "Generate notification template"
+      command: |
+        SERVICE_NAME="<< parameters.service_name >>"
+        if [ -n SERVICE_NAME ]; then
+          SERVICE_ADDON=" (service: ${SERVICE_NAME})"
+        fi
+        HEADER="${CIRCLE_PROJECT_REPONAME} ${CIRCLE_BRANCH}${SERVICE_ADDON} is deploying, go here to cancel."
+        mkdir -p /tmp/teak-orb
+        echo "{
+            \"text\": \"${HEADER}\",
+            \"blocks\": [
+              {
+                \"type\": \"header\",
+                \"text\": {
+                  \"type\": \"plain_text\",
+                  \"text\": \"${HEADER} :octagonal_sign::no_good: \",
+                  \"emoji\": true
+                }
+              },
+              {
+                \"type\": \"section\",
+                \"fields\": [
+                  {
+                    \"type\": \"mrkdwn\",
+                    \"text\": \"<https://app.circleci.com/pipelines/workflows/${CIRCLE_WORKFLOW_ID}|View Workflow>\"
+                  }
+                ]
+              }
+            ]
+          }" > /tmp/teak-orb/deploy-cancel-slack-template.json
+          echo 'export << parameters.template_name >>=$(cat /tmp/teak-orb/deploy-cancel-slack-template.json)' >> $BASH_ENV

@@ -1,0 +1,68 @@
+description: >
+  Runs a deploy using deployomat, assuming standard exported AWS SSM parameters which must be accessible
+  with the default AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
+
+parameters:
+  region:
+    type: string
+    description: "The AWS region to run in, can be an env var"
+    default: "$TF_OUT_REGION"
+  service_name:
+    type: string
+    description: "The name of the service to be deployed, can be an env var."
+  account_name:
+    type: string
+    description: "The name of the account to deploy in, can be an env var"
+    default: "$TF_OUT_ACCOUNT"
+  environment:
+    type: string
+    description: "The environment to deploy in, can be an env var"
+    default: "$TF_OUT_ENVIRONMENT"
+  ami_id:
+    type: string
+    description: "The AMI to deploy, can be an env var, if blank, will attempt to extract the ami associated with architecture from packer_manifest"
+    default: ""
+  architecture:
+    type: string
+    description: "The architecture being deployed, used if ami_id is not specified, can be an env var"
+    default: "$TF_OUT_ARCHITECTURE"
+  packer_manifest_path:
+    type: string
+    description: "The path to the packer manifest, will be used to extract ami_id if none is specified"
+    default: "packer-manifest.json"
+  restore_terraform_output:
+    type: boolean
+    description: "If true will attach workspace at . and run terraform-restore-output"
+    default: true
+  organization_prefix:
+    type: string
+    description: "The organization_prefix for all SSM parameters"
+    default: "teak"
+  deploy_config_file:
+    type: string
+    description: "Optional path to a file containing values to be placed in DeployConfig, may be an env var"
+    default: ""
+
+steps:
+  - when:
+      condition: << parameters.restore_terraform_output >>
+      steps:
+        - attach_workspace:
+            at: "."
+        - terraform-restore-output:
+            use_circle_workspace: false
+            plan_path: "."
+        - run:
+            name: "Deploy"
+            environment:
+              D_REGION: << parameters.region >>
+              D_SERVICE_NAME: << parameters.service_name >>
+              D_ACCOUNT_NAME: << parameters.account_name >>
+              D_ENVIRONMENT: << parameters.environment >>
+              D_AMI_ID: << parameters.ami_id >>
+              D_ARCHITECTURE: << parameters.architecture >>
+              D_MANIFEST_PATH: << parameters.packer_manifest_path >>
+              D_ORGANIZATION_PREFIX: << parameters.organization_prefix >>
+              D_DEPLOY_CONFIG: << parameters.deploy_config_file >>
+              D_ACTION: "deploy"
+            command: << include(scripts/deploy_or_cancel.sh) >>

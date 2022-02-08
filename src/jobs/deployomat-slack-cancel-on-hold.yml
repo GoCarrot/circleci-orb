@@ -1,0 +1,27 @@
+description: "Notify a Slack channel when we need approval to cancel a deploy."
+
+docker:
+  - image: cimg/base:stable
+
+resource_class: small
+
+parameters:
+  channel:
+    default: $SLACK_DEFAULT_CHANNEL
+    description: >
+      Select which channel in which to post to. Channel name or ID will work.
+      You may include a comma separated list of channels if you wish to post to
+      multiple channels at once. Set the "SLACK_DEFAULT_CHANNEL" environment
+      variable for the default channel.
+    type: string
+  service_name:
+    type: "string"
+    description: "Name of the service being deployed"
+    default: ""
+
+steps:
+  - deployomat-cancel-on-hold-message:
+      service_name: << parameters.service_name >>
+  - slack/notify:
+      channel: << parameters.channel >>
+      template: TEAK_DEPLOY_CANCEL_ON_HOLD

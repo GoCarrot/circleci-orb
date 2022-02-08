@@ -1,0 +1,63 @@
+description: >
+  Runs a deploy using deployomat, assuming standard exported AWS SSM parameters which must be accessible
+  with the default AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
+
+docker:
+  - image: cimg/base:stable
+
+resource_class: small
+
+parameters:
+  region:
+    type: string
+    description: "The AWS region to run in, can be an env var"
+    default: "$TF_OUT_REGION"
+  service_name:
+    type: string
+    description: "The name of the service to be deployed, can be an env var."
+  account_name:
+    type: string
+    description: "The name of the account to deploy in, can be an env var"
+    default: "$TF_OUT_ACCOUNT"
+  environment:
+    type: string
+    description: "The environment to deploy in, can be an env var"
+    default: "$TF_OUT_ENVIRONMENT"
+  ami_id:
+    type: string
+    description: "The AMI to deploy, can be an env var, if blank, will attempt to extract the ami associated with architecture from packer_manifest"
+    default: ""
+  architecture:
+    type: string
+    description: "The architecture being deployed, used if ami_id is not specified, can be an env var"
+    default: "$TF_OUT_ARCHITECTURE"
+  packer_manifest_path:
+    type: string
+    description: "The path to the packer manifest, will be used to extract ami_id if none is specified"
+    default: "packer-manifest.json"
+  restore_terraform_output:
+    type: boolean
+    description: "If true will attach workspace at . and run terraform-restore-output"
+    default: true
+  organization_prefix:
+    type: string
+    description: "The organization_prefix for all SSM parameters"
+    default: "teak"
+  deploy_config_file:
+    type: string
+    description: "Optional path to a file containing values to be placed in DeployConfig, may be an env var"
+    default: ""
+
+steps:
+  - aws-cli/install
+  - deployomat-deploy:
+      region: << parameters.region >>
+      service_name: << parameters.service_name >>
+      account_name: << parameters.account_name >>
+      environment: << parameters.environment >>
+      ami_id: << parameters.ami_id >>
+      architecture: << parameters.architecture >>
+      packer_manifest_path: << parameters.packer_manifest_path >>
+      restore_terraform_output: << parameters.restore_terraform_output >>
+      organization_prefix: << parameters.organization_prefix >>
+      deploy_config_file: << parameters.deploy_config_file >>
