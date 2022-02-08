@@ -24,4 +24,4 @@ steps:
       service_name: << parameters.service_name >>
   - slack/notify:
       channel: << parameters.channel >>
-      template: TEAK_DEPLOY_CANCEL_ON_HOLD
+      template: TEAK_DEPLOY_DEPLOY_ON_HOLD
