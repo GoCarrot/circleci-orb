@@ -78,6 +78,11 @@ parameters:
     description: "Steps to execute prior to running terraform apply, but after terraform init."
     default: []
 
+  cache_version:
+    type: "string"
+    description: "Change me to blow away caches"
+    default: ""
+
 steps:
   - terraform-install:
       version: << parameters.version >>
@@ -87,6 +92,7 @@ steps:
       gpg_keyserver: << parameters.gpg_keyserver >>
   - terraform-init:
       path: << parameters.path >>
+      cache_version: << parameters.cache_version >>
   - when:
       condition: << parameters.continuation_cache >>
       steps:

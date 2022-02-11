@@ -5,12 +5,16 @@ parameters:
     type: "string"
     description: "Path to the terraform module"
     default: "."
+  cache_version:
+    type: "string"
+    description: "Change me to blow away caches"
+    default: "v1"
 
 steps:
   - restore_cache:
       keys:
-        - teak-orb-terraform-module-cache-{{ checksum "<< parameters.path >>/.terraform.lock.hcl" }}
-        - teak-orb-terraform-module-cache
+        - << parameters.cache_version >>-teak-orb-terraform-module-cache-{{ checksum "<< parameters.path >>/.terraform.lock.hcl" }}
+        - << parameters.cache_version >>-teak-orb-terraform-module-cache
   - run:
       name: Terraform Init
       command: |
@@ -22,6 +26,6 @@ steps:
 
         ~/terraform/terraform -chdir="$module_path" init -no-color
   - save_cache:
-      key: teak-orb-terraform-module-cache-{{ checksum "<< parameters.path >>/.terraform.lock.hcl" }}
+      key: << parameters.cache_version >>-teak-orb-terraform-module-cache-{{ checksum "<< parameters.path >>/.terraform.lock.hcl" }}
       paths:
         - << parameters.path >>/.terraform

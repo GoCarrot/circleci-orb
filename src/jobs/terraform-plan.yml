@@ -82,6 +82,11 @@ parameters:
     description: "Steps to execute prior to continuing the workflow, can modify continue_params.json"
     default: []
 
+  cache_version:
+    type: "string"
+    description: "Change me to blow away caches"
+    default: "v1"
+
 steps:
   - checkout
   - terraform-install:
@@ -92,6 +97,7 @@ steps:
       gpg_keyserver: << parameters.gpg_keyserver >>
   - terraform-init:
       path: << parameters.path >>
+      cache_version: << parameters.cache_version >>
   - terraform-plan:
       out_plan: << parameters.out_plan >>
       out_log: << parameters.out_log >>

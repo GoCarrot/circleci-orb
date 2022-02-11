@@ -82,6 +82,11 @@ parameters:
     description: "Steps to execute prior to running terraform apply, but after terraform init."
     default: []
 
+  cache_version:
+    type: "string"
+    description: "Change me to blow away caches"
+    default: "v1"
+
 steps:
   - checkout
   - terraform-apply:
@@ -100,3 +105,4 @@ steps:
       include_output: << parameters.include_output >>
       use_circle_workspace: << parameters.use_circle_workspace >>
       before_apply_steps: << parameters.before_apply_steps >>
+      cache_version: << parameters.cache_version >>
