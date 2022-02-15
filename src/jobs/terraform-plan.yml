@@ -85,7 +85,7 @@ parameters:
   cache_version:
     type: "string"
     description: "Change me to blow away caches"
-    default: "v1"
+    default: "v2"
 
 steps:
   - checkout

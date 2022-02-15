@@ -81,7 +81,7 @@ parameters:
   cache_version:
     type: "string"
     description: "Change me to blow away caches"
-    default: ""
+    default: "v2"
 
 steps:
   - terraform-install:
