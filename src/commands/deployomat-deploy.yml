@@ -52,17 +52,17 @@ steps:
         - terraform-restore-output:
             use_circle_workspace: false
             plan_path: "."
-        - run:
-            name: "Deploy"
-            environment:
-              D_REGION: << parameters.region >>
-              D_SERVICE_NAME: << parameters.service_name >>
-              D_ACCOUNT_NAME: << parameters.account_name >>
-              D_ENVIRONMENT: << parameters.environment >>
-              D_AMI_ID: << parameters.ami_id >>
-              D_ARCHITECTURE: << parameters.architecture >>
-              D_MANIFEST_PATH: << parameters.packer_manifest_path >>
-              D_ORGANIZATION_PREFIX: << parameters.organization_prefix >>
-              D_DEPLOY_CONFIG: << parameters.deploy_config_file >>
-              D_ACTION: "deploy"
-            command: << include(scripts/deploy_or_cancel.sh) >>
+  - run:
+      name: "Deploy"
+      environment:
+        D_REGION: << parameters.region >>
+        D_SERVICE_NAME: << parameters.service_name >>
+        D_ACCOUNT_NAME: << parameters.account_name >>
+        D_ENVIRONMENT: << parameters.environment >>
+        D_AMI_ID: << parameters.ami_id >>
+        D_ARCHITECTURE: << parameters.architecture >>
+        D_MANIFEST_PATH: << parameters.packer_manifest_path >>
+        D_ORGANIZATION_PREFIX: << parameters.organization_prefix >>
+        D_DEPLOY_CONFIG: << parameters.deploy_config_file >>
+        D_ACTION: "deploy"
+      command: << include(scripts/deploy_or_cancel.sh) >>
