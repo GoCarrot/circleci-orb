@@ -10,12 +10,25 @@ SetupEnv() {
   export D_MANIFEST_PATH=$(eval echo "${D_MANIFEST_PATH}")
   export D_ORGANIZATION_PREFIX=$(eval echo "${D_ORGANIZATION_PREFIX}")
   D_DEPLOY_CONFIG_FILE=$(eval echo "${D_DEPLOY_CONFIG_FILE}")
+
+  echo "D_REGION=$D_REGION"
+  echo "D_SERVICE_NAME=$D_SERVICE_NAME"
+  echo "D_ACCOUNT_NAME=$D_ACCOUNT_NAME"
+  echo "D_ENVIRONMENT=$D_ENVIRONMENT"
+  echo "D_AMI_ID=$D_AMI_ID"
+  echo "D_ARCHITECTURE=$D_ARCHITECTURE"
+  echo "D_MANIFEST_PATH=$D_MANIFEST_PATH"
+  echo "D_ORGANIZATION_PREFIX=$D_ORGANIZATION_PREFIX"
+  echo "D_DEPLOY_CONFIG_FILE=$D_DEPLOY_CONFIG_FILE"
+
   export AWS_REGION=$D_REGION
 }
 
 GetAmiId() {
   if [ -z "$D_AMI_ID" ]; then
+    echo "Extracting AMI id from packer manifest..."
     export D_AMI_ID=$(cat "$D_MANIFEST_PATH" | jq -r '.builds | map(select(.custom_data.arch == $ENV.D_ARCHITECTURE)) | map(select(.artifact_id | startswith($ENV.D_REGION))) | .[0].artifact_id | split(":") | .[1]')
+    echo "D_AMI_ID=$D_AMI_ID"
   fi
 }
 
