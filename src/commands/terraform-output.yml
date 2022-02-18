@@ -48,6 +48,11 @@ parameters:
     default: true
     description: "Use plan_path as a circleci workspace."
 
+  cache_version:
+    type: "string"
+    description: "Change me to blow away caches"
+    default: "v2"
+
 steps:
   - terraform-install:
       version: << parameters.version >>
@@ -57,6 +62,7 @@ steps:
       gpg_keyserver: << parameters.gpg_keyserver >>
   - terraform-init:
       path: << parameters.path >>
+      cache_version: << parameters.cache_version >>
   - when:
       condition: << parameters.use_circle_workspace >>
       steps:

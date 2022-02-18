@@ -51,6 +51,11 @@ parameters:
     default: true
     description: "Use plan_path as a circleci workspace."
 
+  cache_version:
+    type: "string"
+    description: "Change me to blow away caches"
+    default: "v2"
+
 steps:
   - checkout
   - terraform-output:
@@ -63,3 +68,4 @@ steps:
       workspace: << parameters.workspace >>
       plan_path: << parameters.plan_path >>
       use_circle_workspace: << parameters.use_circle_workspace >>
+      cache_version: << parameters.cache_version >>
