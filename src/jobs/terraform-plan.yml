@@ -87,6 +87,11 @@ parameters:
     description: "Change me to blow away caches"
     default: "v2"
 
+  var_file:
+    default: ''
+    description: "Comma separated list of var_files to load to set, e.g. 'dev.tfvars'"
+    type: string
+
 steps:
   - checkout
   - terraform-install:
@@ -105,6 +110,7 @@ steps:
       workspace: << parameters.workspace >>
       path: << parameters.path >>
       var: << parameters.var >>
+      var_file: << parameters.var_file >>
       continuation_workflow_type: << parameters.continuation_workflow_type >>
   - persist_to_workspace:
       root: << parameters.out_path >>

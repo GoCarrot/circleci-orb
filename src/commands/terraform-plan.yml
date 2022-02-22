@@ -33,6 +33,11 @@ parameters:
     description: "Prepares a continue_params.json file for use with https://circleci.com/developer/orbs/orb/circleci/continuation. Sets workflow-type pipeline parameter in continued workflow."
     default: ""
 
+  var_file:
+    default: ''
+    description: "Comma separated list of var_files to load to set, e.g. 'dev.tfvars'"
+    type: string
+
 steps:
   - run:
       name: Terraform Plan
@@ -59,6 +64,12 @@ steps:
         if [[ -n "<< parameters.var >>" ]]; then
           for var in $(echo "<< parameters.var >>" | tr ',' '\n'); do
             PLAN_ARGS="$PLAN_ARGS -var $var"
+          done
+        fi
+
+        if [[ -n "<< parameters.var_file >>" ]]; then
+          for var in $(echo "<< parameters.var_file >>" | tr ',' '\n'); do
+            PLAN_ARGS="$PLAN_ARGS -var-file $var"
           done
         fi
 
