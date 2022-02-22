@@ -63,6 +63,6 @@ steps:
         D_ARCHITECTURE: << parameters.architecture >>
         D_MANIFEST_PATH: << parameters.packer_manifest_path >>
         D_ORGANIZATION_PREFIX: << parameters.organization_prefix >>
-        D_DEPLOY_CONFIG: << parameters.deploy_config_file >>
+        D_DEPLOY_CONFIG_FILE: << parameters.deploy_config_file >>
         D_ACTION: "deploy"
       command: << include(scripts/deploy_or_cancel.sh) >>
