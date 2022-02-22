@@ -45,6 +45,10 @@ parameters:
 
 steps:
   - when:
+      condition: << parameters.deploy_config_file >>
+      steps:
+        - checkout
+  - when:
       condition: << parameters.restore_terraform_output >>
       steps:
         - attach_workspace:
@@ -52,10 +56,6 @@ steps:
         - terraform-restore-output:
             use_circle_workspace: false
             plan_path: "."
-  - when:
-      condition: << parameters.deploy_config_file >>
-      steps:
-        - checkout
   - run:
       name: "Deploy"
       environment:
