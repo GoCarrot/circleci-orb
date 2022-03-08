@@ -15,29 +15,24 @@ parameters:
   service_name:
     type: string
     description: "The name of the service to be deployed, can be an env var."
-  account_name:
+  account_canonical_slug:
     type: string
     description: "The name of the account to deploy in, can be an env var"
-    default: "$TF_OUT_ACCOUNT"
+    default: "$TF_OUT_ACCOUNT_CANONICAL_SLUG"
   environment:
     type: string
-    description: "The environment to deploy in, can be an env var"
+    description: "The environment to deploy from, can be an env var"
     default: "$TF_OUT_ENVIRONMENT"
   restore_terraform_output:
     type: boolean
     description: "If true will attach workspace at . and run terraform-restore-output"
     default: true
-  organization_prefix:
-    type: string
-    description: "The organization_prefix for all SSM parameters"
-    default: "teak"
 
 steps:
   - aws-cli/install
   - deployomat-cancel:
       region: << parameters.region >>
       service_name: << parameters.service_name >>
-      account_name: << parameters.account_name >>
+      account_canonical_slug: << parameters.account_canonical_slug >>
       environment: << parameters.environment >>
       restore_terraform_output: << parameters.restore_terraform_output >>
-      organization_prefix: << parameters.organization_prefix >>
