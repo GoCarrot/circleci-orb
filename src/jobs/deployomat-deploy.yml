@@ -31,6 +31,10 @@ parameters:
     type: string
     description: "The path to the packer manifest, will be used to extract ami_id if none is specified"
     default: "packer-manifest.json"
+  restore_workspace:
+    type: boolean
+    description: "If true will attach workspace at ."
+    default: true
   restore_terraform_output:
     type: boolean
     description: "If true will attach workspace at . and run terraform-restore-output"
@@ -49,5 +53,6 @@ steps:
       deployomat_canonical_slug: << parameters.deployomat_canonical_slug >>
       ami_id: << parameters.ami_id >>
       packer_manifest_path: << parameters.packer_manifest_path >>
+      restore_workspace: << parameters.restore_workspace >>
       restore_terraform_output: << parameters.restore_terraform_output >>
       deploy_config_file: << parameters.deploy_config_file >>

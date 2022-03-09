@@ -26,6 +26,10 @@ parameters:
     type: string
     description: "The path to the packer manifest, will be used to extract ami_id if none is specified"
     default: "packer-manifest.json"
+  restore_workspace:
+    type: boolean
+    description: "If true will attach workspace at ."
+    default: true
   restore_terraform_output:
     type: boolean
     description: "If true will attach workspace at . and run terraform-restore-output"
@@ -41,10 +45,16 @@ steps:
       steps:
         - checkout
   - when:
-      condition: << parameters.restore_terraform_output >>
+      condition:
+        or:
+          - << parameters.restore_terraform_output >>
+          - << parameters.restore_workspace >>
       steps:
         - attach_workspace:
             at: "."
+  - when:
+      condition: << parameters.restore_terraform_output >>
+      steps:
         - terraform-restore-output:
             use_circle_workspace: false
             plan_path: "."
