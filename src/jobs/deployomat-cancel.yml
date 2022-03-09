@@ -19,10 +19,10 @@ parameters:
     type: string
     description: "The name of the account to deploy in, can be an env var"
     default: "$TF_OUT_ACCOUNT_CANONICAL_SLUG"
-  environment:
+  deployomat_canonical_slug:
     type: string
-    description: "The environment to deploy from, can be an env var"
-    default: "$TF_OUT_ENVIRONMENT"
+    description: "The accountomat canonical slug of the account containing deployomat, can be an env var"
+    default: "$TF_OUT_DEPLOYOMAT_CANONICAL_SLUG"
   restore_terraform_output:
     type: boolean
     description: "If true will attach workspace at . and run terraform-restore-output"
@@ -34,5 +34,5 @@ steps:
       region: << parameters.region >>
       service_name: << parameters.service_name >>
       account_canonical_slug: << parameters.account_canonical_slug >>
-      environment: << parameters.environment >>
+      deployomat_canonical_slug: << parameters.deployomat_canonical_slug >>
       restore_terraform_output: << parameters.restore_terraform_output >>

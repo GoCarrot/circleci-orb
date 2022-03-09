@@ -12,20 +12,16 @@ parameters:
     description: "The name of the service to be deployed, can be an env var."
   account_canonical_slug:
     type: string
-    description: "The name of the account to deploy in, can be an env var"
+    description: "The accountomat canonical slug of the account to deploy in, can be an env var"
     default: "$TF_OUT_ACCOUNT_CANONICAL_SLUG"
-  environment:
+  deployomat_canonical_slug:
     type: string
-    description: "The environment to deploy from, can be an env var"
-    default: "$TF_OUT_ENVIRONMENT"
+    description: "The accountomat canonical slug of the account containing deployomat, can be an env var"
+    default: "$TF_OUT_DEPLOYOMAT_CANONICAL_SLUG"
   ami_id:
     type: string
     description: "The AMI to deploy, can be an env var, if blank, will attempt to extract the ami associated with architecture from packer_manifest"
     default: ""
-  architecture:
-    type: string
-    description: "The architecture being deployed, used if ami_id is not specified, can be an env var"
-    default: "$TF_OUT_ARCHITECTURE"
   packer_manifest_path:
     type: string
     description: "The path to the packer manifest, will be used to extract ami_id if none is specified"
@@ -58,9 +54,8 @@ steps:
         D_REGION: << parameters.region >>
         D_SERVICE_NAME: << parameters.service_name >>
         D_ACCOUNT_CANONICAL_SLUG: << parameters.account_canonical_slug >>
-        D_ENVIRONMENT: << parameters.environment >>
+        D_DEPLOYOMAT_CANONICAL_SLUG: << parameters.deployomat_canonical_slug >>
         D_AMI_ID: << parameters.ami_id >>
-        D_ARCHITECTURE: << parameters.architecture >>
         D_MANIFEST_PATH: << parameters.packer_manifest_path >>
         D_DEPLOY_CONFIG_FILE: << parameters.deploy_config_file >>
         D_ACTION: "deploy"

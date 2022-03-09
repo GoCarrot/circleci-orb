@@ -19,18 +19,14 @@ parameters:
     type: string
     description: "The name of the account to deploy in, can be an env var"
     default: "$TF_OUT_ACCOUNT_CANONICAL_SLUG"
-  environment:
+  deployomat_canonical_slug:
     type: string
-    description: "The environment to deploy from, can be an env var"
-    default: "$TF_OUT_ENVIRONMENT"
+    description: "The accountomat canonical slug of the account containing deployomat, can be an env var"
+    default: "$TF_OUT_DEPLOYOMAT_CANONICAL_SLUG"
   ami_id:
     type: string
     description: "The AMI to deploy, can be an env var, if blank, will attempt to extract the ami associated with architecture from packer_manifest"
     default: ""
-  architecture:
-    type: string
-    description: "The architecture being deployed, used if ami_id is not specified, can be an env var"
-    default: "$TF_OUT_ARCHITECTURE"
   packer_manifest_path:
     type: string
     description: "The path to the packer manifest, will be used to extract ami_id if none is specified"
@@ -50,9 +46,8 @@ steps:
       region: << parameters.region >>
       service_name: << parameters.service_name >>
       account_canonical_slug: << parameters.account_canonical_slug >>
-      environment: << parameters.environment >>
+      deployomat_canonical_slug: << parameters.deployomat_canonical_slug >>
       ami_id: << parameters.ami_id >>
-      architecture: << parameters.architecture >>
       packer_manifest_path: << parameters.packer_manifest_path >>
       restore_terraform_output: << parameters.restore_terraform_output >>
       deploy_config_file: << parameters.deploy_config_file >>
