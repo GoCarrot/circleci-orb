@@ -29,7 +29,7 @@ parameters:
   restore_terraform_output:
     type: boolean
     description: "If true will attach workspace at . and run terraform-restore-output"
-    default: true
+    default: false
   deploy_config_file:
     type: string
     description: "Optional path to a file containing values to be placed in DeployConfig, may be an env var"

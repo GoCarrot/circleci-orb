@@ -26,7 +26,7 @@ parameters:
   restore_terraform_output:
     type: boolean
     description: "If true will attach workspace at . and run terraform-restore-output"
-    default: true
+    default: false
 
 steps:
   - aws-cli/install
