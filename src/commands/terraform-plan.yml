@@ -33,6 +33,11 @@ parameters:
     description: "Prepares a continue_params.json file for use with https://circleci.com/developer/orbs/orb/circleci/continuation. Sets workflow-type pipeline parameter in continued workflow."
     default: ""
 
+  continuation_parameters:
+    default: ''
+    description: "Comma separated list of additional parameters to set for the continued pipeline e.g. 'foo=bar,baz=boo'"
+    type: string
+
   var_file:
     default: ''
     description: "Comma separated list of var_files to load to set, e.g. 'dev.tfvars'"
@@ -90,11 +95,21 @@ steps:
         - run:
             name: "Generate continue_params"
             command: |
+              CONTINUE_PARAMS=""
               if [ -f << parameters.out_path >>/tf_plan_changes ]; then
-                echo "{\"run-apply\":true, \"cache-id\": \"${CIRCLE_WORKFLOW_ID}\", \"workflow-type\":\"<< parameters.continuation_workflow_type >>\", \"plan-log-url\":\"${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}<< parameters.out_path >>/<< parameters.out_log >>\"}" > continue_params.json
+                CONTINUE_PARAMS="{\"run-apply\":true, \"cache-id\": \"${CIRCLE_WORKFLOW_ID}\", \"workflow-type\":\"<< parameters.continuation_workflow_type >>\", \"plan-log-url\":\"${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}<< parameters.out_path >>/<< parameters.out_log >>\"}"
               else
-                echo "{\"workflow-type\":\"<< parameters.continuation_workflow_type >>\"}" > continue_params.json
+                CONTINUE_PARAMS="{\"workflow-type\":\"<< parameters.continuation_workflow_type >>\"}"
               fi
+
+              if [[ -n "<< parameters.continuation_parameters >>" ]]; then
+                for var in $(echo "<< parameters.continuation_parameters >>" | tr ',' '\n'); do
+                  IFS='=' read key value \<<< $var
+                  CONTINUE_PARAMS=$(echo "$CONTINUE_PARAMS" | jq --arg key "$key" --arg val "$value" '. + {($key): $val}')
+                done
+              fi
+
+              echo "$CONTINUE_PARAMS" > continue_params.json
         - save_cache:
             key: "{{ .Environment.CIRCLE_WORKFLOW_ID }}"
             paths:

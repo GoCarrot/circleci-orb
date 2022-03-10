@@ -72,6 +72,11 @@ parameters:
     description: "Prepares a continue_params.json file for use with https://circleci.com/developer/orbs/orb/circleci/continuation. Sets workflow-type pipeline parameter in continued workflow."
     default: ""
 
+  continuation_parameters:
+    default: ''
+    description: "Comma separated list of additional parameters to set for the continued pipeline e.g. 'foo=bar,baz=boo'"
+    type: string
+
   continuation_configuration_path:
     type: string
     description: The path to the configuration that will be passed to the continue API
@@ -112,6 +117,7 @@ steps:
       var: << parameters.var >>
       var_file: << parameters.var_file >>
       continuation_workflow_type: << parameters.continuation_workflow_type >>
+      continuation_parameters: << parameters.continuation_parameters >>
   - persist_to_workspace:
       root: << parameters.out_path >>
       paths:
