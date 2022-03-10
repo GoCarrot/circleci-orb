@@ -31,6 +31,26 @@ parameters:
     default: "keyserver.ubuntu.com"
     description: "The keyserver to retrieve the GPG key from"
 
+  workspace:
+    type: string
+    description: Name of the terraform workspace
+    default: ""
+
+  path:
+    type: "string"
+    description: "Path to the terraform module"
+    default: "."
+
+  var:
+    default: ''
+    description: "Comma separated list of vars to set, e.g. 'foo=bar,baz=boo'"
+    type: string
+
+  var_file:
+    default: ''
+    description: "Comma separated list of var_files to load to set, e.g. 'dev.tfvars'"
+    type: string
+
 steps:
   - checkout
   - terraform-install:
@@ -40,4 +60,8 @@ steps:
       gpg_key_id: << parameters.gpg_key_id >>
       gpg_keyserver: << parameters.gpg_keyserver >>
   - terraform-init
-  - terraform-drift-detection
+  - terraform-drift-detection:
+      workspace: << parameters.workspace >>
+      path: << parameters.path >>
+      var: << parameters.var >>
+      var_file: << parameters.var_file >>
