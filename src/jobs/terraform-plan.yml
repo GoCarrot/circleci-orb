@@ -62,15 +62,10 @@ parameters:
     description: "Comma separated list of vars to set, e.g. 'foo=bar,baz=boo'"
     type: string
 
-  continue:
+  continuation:
     type: boolean
-    default: true
-    description: "Automatically trigger a CircleCI continuation when continuation_workflow_type is set."
-
-  continuation_workflow_type:
-    type: string
-    description: "Prepares a continue_params.json file for use with https://circleci.com/developer/orbs/orb/circleci/continuation. Sets workflow-type pipeline parameter in continued workflow."
-    default: ""
+    description: "Prepares a continue_params.json file for use with https://circleci.com/developer/orbs/orb/circleci/continuation."
+    default: false
 
   continuation_parameters:
     default: ''
@@ -116,17 +111,14 @@ steps:
       path: << parameters.path >>
       var: << parameters.var >>
       var_file: << parameters.var_file >>
-      continuation_workflow_type: << parameters.continuation_workflow_type >>
+      continuation: << parameters.continuation >>
       continuation_parameters: << parameters.continuation_parameters >>
   - persist_to_workspace:
       root: << parameters.out_path >>
       paths:
         - "*"
   - when:
-      condition:
-        and:
-          - << parameters.continuation_workflow_type >>
-          - << parameters.continue >>
+      condition: << parameters.continuation >>
       steps:
         - when:
             condition: << parameters.before_continuation_steps >>
