@@ -1,0 +1,29 @@
+description: >
+  Generates continuation parameters for a pipeline with the given region, deployomat_canonical_slug, and account_canonical_slug.
+  Intended to be used as part of a workflow triggered by an upstream AMI being updated.
+
+parameters:
+  region:
+    type: string
+    description: "The AWS region to run in, can be an env var"
+  account_canonical_slug:
+    type: string
+    description: "The name of the account to deploy in, can be an env var"
+    default: ''
+  deployomat_canonical_slug:
+    type: string
+    description: "The accountomat canonical slug of the account containing deployomat, can be an env var"
+  continuation_parameters:
+    default: ''
+    description: "Comma separated list of additional parameters to set for the continued pipeline e.g. 'foo=bar,baz=boo'"
+    type: string
+
+steps:
+  - run:
+      name: "Generate continue_params.json"
+      environment:
+        D_REGION: << parameters.region >>
+        D_ACCOUNT_CANONICAL_SLUG: << parameters.account_canonical_slug >>
+        D_DEPLOYOMAT_CANONICAL_SLUG: << parameters.deployomat_canonical_slug >>
+        D_CONTINUATION_PARAMTERS: << parameters.continuation_parameters >>
+      command: << include(scripts/ami_update_continue_params.sh) >>

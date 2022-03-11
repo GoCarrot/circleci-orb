@@ -1,0 +1,47 @@
+description: >
+  Continues a pipeline with the given region, deployomat_canonical_slug, and account_canonical_slug. Intended to be used
+  as part of a workflow triggered by an upstream AMI being updated.
+
+docker:
+  - image: cimg/base:stable
+
+resource_class: small
+
+parameters:
+  region:
+    type: string
+    description: "The AWS region to run in, can be an env var"
+  account_canonical_slug:
+    type: string
+    description: "The name of the account to deploy in, can be an env var"
+    default: ''
+  deployomat_canonical_slug:
+    type: string
+    description: "The accountomat canonical slug of the account containing deployomat, can be an env var"
+  continuation_configuration_path:
+    type: string
+    description: The path to the configuration that will be passed to the continue API
+    default: ".circleci/continue.yml"
+  before_continuation_steps:
+    type: steps
+    description: "Steps to execute prior to continuing the workflow, can modify continue_params.json"
+    default: []
+  continuation_parameters:
+    default: ''
+    description: "Comma separated list of additional parameters to set for the continued pipeline e.g. 'foo=bar,baz=boo'"
+    type: string
+
+
+steps:
+  - checkout
+  - ami-update-continuation:
+      region: << parameters.region >>
+      account_canonical_slug: << parameters.account_canonical_slug >>
+      deployomat_canonical_slug: << parameters.deployomat_canonical_slug >>
+      continuation_parameters: << parameters.continuation_parameters >>
+  - when:
+      condition: << parameters.before_continuation_steps >>
+      steps: << parameters.before_continuation_steps >>
+  - continuation/continue:
+      configuration_path: << parameters.continuation_configuration_path >>
+      parameters: continue_params.json
