@@ -28,7 +28,7 @@ BuildCommands() {
 }
 
 ExecuteCommands() {
-  for api_call in $API_CALLS; do
+  for api_call in "${API_CALLS[@]}"; do
     echo "$api_call"
     eval "$api_call"
   done
