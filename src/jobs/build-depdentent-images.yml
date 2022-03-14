@@ -1,0 +1,27 @@
+description: >
+  Triggers builds of images which are dependent on images built from this repo.
+  Requires CIRCLE_TOKEN to be provided as an env var.
+
+docker:
+  - image: cimg/base:stable
+
+resource_class: small
+
+parameters:
+  region:
+    type: string
+    description: "The AWS region to run in, can be an env var"
+    default: "$TF_OUT_REGION"
+  ami_name_prefix:
+    type: string
+    description: "The name prefix for the AMI built by _this_ repo."
+  build_account_slug:
+    type: string
+    description: "The accountomat canonical slug of the account to build in, can be an env var"
+
+steps:
+  - aws-cli/install
+  - build-dependent-images:
+      region: << parameters.region >>
+      ami_name_prefix: << parameters.ami_name_prefix >>
+      build_account_slug: << parameters.build_account_slug >>
