@@ -22,13 +22,16 @@ IdentifyDependents() {
 }
 
 BuildCommands() {
+  echo "Building commands"
   local RAW_API_CALLS
   RAW_API_CALLS=$(echo "$DEPENDENTS" |  jq -r 'map({url: "https://circleci.com/api/v2/project/\(.project_slug)/pipeline", data: ({branch: .branch, parameters: {in_build_account_slug: .build_account, in_deploy_account_slug: (.deploy_account // "")}} | tojson | @sh)}) | map("curl -XPOST --data \(.data) -H \"Content-Type: application/json\" -H \("Circle-Token: \($ENV.CIRCLE_TOKEN)" | @sh) \(.url)") | join("\n")')
   IFS=$'\n' read -r -a API_CALLS -d "" <<< "$RAW_API_CALLS"
 }
 
 ExecuteCommands() {
+  echo "Executing commands"
   for api_call in "${API_CALLS[@]}"; do
+    echo "Executing command"
     echo "$api_call"
     eval "$api_call"
   done
