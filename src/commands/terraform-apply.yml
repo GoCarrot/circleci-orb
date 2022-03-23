@@ -96,6 +96,9 @@ steps:
   - when:
       condition: << parameters.continuation_cache >>
       steps:
+        - run:
+            name: "Ensure directory structure exists"
+            command: mkdir -p /tmp/teak-orb-terraform
         - restore_cache:
             key: << parameters.continuation_cache >>
   - when:
