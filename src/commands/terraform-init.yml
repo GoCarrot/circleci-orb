@@ -13,6 +13,7 @@ parameters:
 steps:
   - restore_cache:
       keys:
+        - << parameters.cache_version >>-teak-orb-terraform-module-cache-{{ checksum "<< parameters.path >>/.terraform.lock.hcl" }}-
         - << parameters.cache_version >>-teak-orb-terraform-module-cache-{{ checksum "<< parameters.path >>/.terraform.lock.hcl" }}
   - run:
       name: Terraform Init
