@@ -21,6 +21,7 @@ parameters:
     default: []
 
 steps:
+  - checkout
   - attach_workspace:
       at: << parameters.out_path >>
   - when:
