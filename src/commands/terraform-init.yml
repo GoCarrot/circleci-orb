@@ -23,9 +23,10 @@ steps:
           exit 1
         fi
 
-        ~/terraform/terraform -chdir="$module_path" init -no-color
+        ~/terraform/terraform -chdir="$module_path" init -no-color | tee /tmp/tf_init.out
   - save_cache:
-      key: << parameters.cache_version >>-teak-orb-terraform-module-cache-{{ checksum "<< parameters.path >>/.terraform.lock.hcl" }}
+      key: << parameters.cache_version >>-teak-orb-terraform-module-cache-{{ checksum "<< parameters.path >>/.terraform.lock.hcl" }}-{{checksum "/tmp/tf_init.out" }}
       paths:
+        - << parameters.path >>/.terraform/modules
         - << parameters.path >>/.terraform/providers
         - << parameters.path >>/.terraform/terraform.tfstate
