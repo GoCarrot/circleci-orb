@@ -72,16 +72,6 @@ parameters:
     description: "Comma separated list of additional parameters to set for the continued pipeline e.g. 'foo=bar,baz=boo'"
     type: string
 
-  continuation_configuration_path:
-    type: string
-    description: The path to the configuration that will be passed to the continue API
-    default: ".circleci/continue.yml"
-
-  before_continuation_steps:
-    type: steps
-    description: "Steps to execute prior to continuing the workflow, can modify continue_params.json"
-    default: []
-
   cache_version:
     type: "string"
     description: "Change me to blow away caches"
@@ -117,12 +107,3 @@ steps:
       root: << parameters.out_path >>
       paths:
         - "*"
-  - when:
-      condition: << parameters.continuation >>
-      steps:
-        - when:
-            condition: << parameters.before_continuation_steps >>
-            steps: << parameters.before_continuation_steps >>
-        - continuation/continue:
-            configuration_path: << parameters.continuation_configuration_path >>
-            parameters: continue_params.json

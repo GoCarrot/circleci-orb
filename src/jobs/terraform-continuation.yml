@@ -1,0 +1,31 @@
+description: >
+  Continue a workflow after running terraform plan (and any other pre-flight jobs.)
+
+docker:
+  - image: cimg/base:stable
+
+parameters:
+  out_path:
+    type: string
+    description: "Path the planfile will be stored in. Will be persisted to workspace. Must be absolute."
+    default: "/tmp/teak-orb-terraform"
+
+  continuation_configuration_path:
+    type: string
+    description: The path to the configuration that will be passed to the continue API
+    default: ".circleci/continue.yml"
+
+  before_continuation_steps:
+    type: steps
+    description: "Steps to execute prior to continuing the workflow, can modify continue_params.json"
+    default: []
+
+steps:
+  - attach_workspace:
+      at: << parameters.out_path >>
+  - when:
+      condition: << parameters.before_continuation_steps >>
+      steps: << parameters.before_continuation_steps >>
+  - continuation/continue:
+      configuration_path: << parameters.continuation_configuration_path >>
+      parameters: << parameters.out_path >>/continue_params.json

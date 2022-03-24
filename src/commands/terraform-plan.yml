@@ -109,7 +109,7 @@ steps:
                 done
               fi
 
-              echo "$CONTINUE_PARAMS" > continue_params.json
+              echo "$CONTINUE_PARAMS" > << parameters.out_path >>/continue_params.json
         - save_cache:
             key: "{{ .Environment.CIRCLE_WORKFLOW_ID }}"
             paths:
