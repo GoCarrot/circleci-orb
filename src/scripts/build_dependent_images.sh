@@ -31,12 +31,24 @@ BuildCommands() {
 }
 
 ExecuteCommands() {
+  SUCCESS="true"
   for api_call in "${API_CALLS[@]}"; do
     echo "Executing command"
     echo "$api_call"
-    eval "$api_call"
+    API_RESPONSE=$(eval "$api_call")
+    echo "$API_RESPONSE"
+    API_ID=$(echo "$API_RESPONSE" | jq -r '.id')
+    if [ -z "$API_ID" ]; then
+      echo "Failed to trigger dependent build!"
+      SUCCESS=
+    fi
     echo ""
   done
+
+  if [ -z "$SUCCESS" ]; then
+    echo "At least one dependent build failed to trigger, failing step."
+    exit 1
+  fi
 }
 
 SetupEnv
