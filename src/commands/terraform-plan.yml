@@ -97,7 +97,7 @@ steps:
             command: |
               CONTINUE_PARAMS=""
               if [ -f << parameters.out_path >>/tf_plan_changes ]; then
-                CONTINUE_PARAMS="{\"run-apply\":true, \"continuation-cache-id\": \"${CIRCLE_WORKFLOW_ID}\", \"workspace\":\"<< parameters.workspace >>\", \"plan-log-url\":\"${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}<< parameters.out_path >>/<< parameters.out_log >>\"}"
+                CONTINUE_PARAMS="{\"run-apply\":true, \"continuation-cache-id\": \"${CIRCLE_WORKFLOW_ID}\", \"workspace\":\"<< parameters.workspace >>\", \"plan-log-url\":\"https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/${CIRCLE_NODE_INDEX}<< parameters.out_path >>/<< parameters.out_log >>\"}"
               else
                 CONTINUE_PARAMS="{}"
               fi
