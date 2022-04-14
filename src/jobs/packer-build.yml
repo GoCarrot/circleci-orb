@@ -2,7 +2,7 @@ description: >
   Run packer build
 
 docker:
-  - image: cimg/base:stable
+  - image: << parameters.image >>
 
 resource_class: small
 
@@ -85,6 +85,11 @@ parameters:
     type: steps
     description: "Steps to after installing and initing packer, but before building the image."
     default: []
+
+  image:
+    type: string
+    default: 'cimg/base:current'
+    description: "The docker image to use when running packer."
 
 steps:
   - checkout
