@@ -81,6 +81,11 @@ parameters:
     description: "The directory packer should be run in, relative to the base directory of the project."
     type: string
 
+  before_build_steps:
+    type: steps
+    description: "Steps to after installing and initing packer, but before building the image."
+    default: []
+
 steps:
   - checkout
   - packer-install:
@@ -92,6 +97,9 @@ steps:
   - packer-init:
       packer_working_directory: << parameters.packer_working_directory >>
       path: << parameters.path >>
+  - when:
+      condition: << parameters.before_build_steps >>
+      steps: << parameters.before_build_steps >>
   - packer-build:
       packer_working_directory: << parameters.packer_working_directory >>
       out_log: << parameters.out_log >>
