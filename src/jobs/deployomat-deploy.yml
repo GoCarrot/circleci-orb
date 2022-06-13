@@ -23,6 +23,10 @@ parameters:
     type: string
     description: "The accountomat canonical slug of the account containing deployomat, can be an env var"
     default: "$TF_OUT_DEPLOYOMAT_CANONICAL_SLUG"
+  role_external_id:
+    type: string
+    description: "If present, the ExternalId to use when assuming a role in AWS."
+    default: "$ROLE_EXTERNAL_ID"
   ami_id:
     type: string
     description: "The AMI to deploy, can be an env var, if blank, will attempt to extract the ami associated with architecture from packer_manifest"
@@ -51,6 +55,7 @@ steps:
       service_name: << parameters.service_name >>
       account_canonical_slug: << parameters.account_canonical_slug >>
       deployomat_canonical_slug: << parameters.deployomat_canonical_slug >>
+      role_external_id: << parameters.role_external_id >>
       ami_id: << parameters.ami_id >>
       packer_manifest_path: << parameters.packer_manifest_path >>
       restore_workspace: << parameters.restore_workspace >>

@@ -5,6 +5,7 @@ SetupEnv() {
   export D_SERVICE_NAME=$(eval echo "${D_SERVICE_NAME}")
   export D_ACCOUNT_CANONICAL_SLUG=$(eval echo "${D_ACCOUNT_CANONICAL_SLUG}")
   export D_DEPLOYOMAT_CANONICAL_SLUG=$(eval echo "${D_DEPLOYOMAT_CANONICAL_SLUG}")
+  export D_ROLE_EXTERNAL_ID=$(eval echo "${D_ROLE_EXTERNAL_ID}")
   export D_AMI_ID=$(eval echo "${D_AMI_ID}")
   export D_MANIFEST_PATH=$(eval echo "${D_MANIFEST_PATH}")
   D_DEPLOY_CONFIG_FILE=$(eval echo "${D_DEPLOY_CONFIG_FILE}")
@@ -13,6 +14,7 @@ SetupEnv() {
   echo "D_SERVICE_NAME=$D_SERVICE_NAME"
   echo "D_ACCOUNT_CANONICAL_SLUG=$D_ACCOUNT_CANONICAL_SLUG"
   echo "D_DEPLOYOMAT_CANONICAL_SLUG=$D_DEPLOYOMAT_CANONICAL_SLUG"
+  echo "D_ROLE_EXTERNAL_ID=$D_ROLE_EXTERNAL_ID"
   echo "D_AMI_ID=$D_AMI_ID"
   echo "D_MANIFEST_PATH=$D_MANIFEST_PATH"
   echo "D_DEPLOY_CONFIG_FILE=$D_DEPLOY_CONFIG_FILE"
@@ -41,7 +43,11 @@ GetRoleAndSfnArn() {
 
 AssumeRole() {
   echo "Assuming role ${ROLE_ARN}"
-  eval $(aws sts assume-role --role-arn "${ROLE_ARN}" --role-session-name "${D_SERVICE_NAME}" | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\(.SessionToken)\n"')
+  if [ -z "$D_ROLE_EXTERNAL_ID" ]; then
+    eval "$(aws sts assume-role --role-arn "${ROLE_ARN}" --role-session-name "${D_SERVICE_NAME}" | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\(.SessionToken)\n"')"
+  else
+    eval "$(aws sts assume-role --external-id "${D_ROLE_EXTERNAL_ID}" --role-arn "${ROLE_ARN}" --role-session-name "${D_SERVICE_NAME}" | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\(.SessionToken)\n"')"
+  fi
 }
 
 Execute() {

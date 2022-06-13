@@ -23,6 +23,10 @@ parameters:
     type: string
     description: "The accountomat canonical slug of the account containing deployomat, can be an env var"
     default: "$TF_OUT_DEPLOYOMAT_CANONICAL_SLUG"
+  role_external_id:
+    type: string
+    description: "If present, the ExternalId to use when assuming a role in AWS."
+    default: "$ROLE_EXTERNAL_ID"
   restore_terraform_output:
     type: boolean
     description: "If true will attach workspace at . and run terraform-restore-output"
@@ -35,4 +39,5 @@ steps:
       service_name: << parameters.service_name >>
       account_canonical_slug: << parameters.account_canonical_slug >>
       deployomat_canonical_slug: << parameters.deployomat_canonical_slug >>
+      role_external_id: << parameters.role_external_id >>
       restore_terraform_output: << parameters.restore_terraform_output >>

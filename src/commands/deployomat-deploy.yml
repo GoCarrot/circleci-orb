@@ -38,6 +38,10 @@ parameters:
     type: string
     description: "Optional path to a file containing values to be placed in DeployConfig, may be an env var"
     default: ""
+  role_external_id:
+    type: string
+    description: "If present, the ExternalId to use when assuming a role in AWS."
+    default: "$ROLE_EXTERNAL_ID"
 
 steps:
   - when:
@@ -65,6 +69,7 @@ steps:
         D_SERVICE_NAME: << parameters.service_name >>
         D_ACCOUNT_CANONICAL_SLUG: << parameters.account_canonical_slug >>
         D_DEPLOYOMAT_CANONICAL_SLUG: << parameters.deployomat_canonical_slug >>
+        D_ROLE_EXTERNAL_ID: << parameters.role_external_id >>
         D_AMI_ID: << parameters.ami_id >>
         D_MANIFEST_PATH: << parameters.packer_manifest_path >>
         D_DEPLOY_CONFIG_FILE: << parameters.deploy_config_file >>

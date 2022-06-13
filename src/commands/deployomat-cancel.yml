@@ -22,6 +22,10 @@ parameters:
     type: boolean
     description: "If true will attach workspace at . and run terraform-restore-output"
     default: false
+  role_external_id:
+    type: string
+    description: "If present, the ExternalId to use when assuming a role in AWS."
+    default: "$ROLE_EXTERNAL_ID"
 
 steps:
   - when:
@@ -39,5 +43,6 @@ steps:
         D_SERVICE_NAME: << parameters.service_name >>
         D_ACCOUNT_CANONICAL_SLUG: << parameters.account_canonical_slug >>
         D_DEPLOYOMAT_CANONICAL_SLUG: << parameters.deployomat_canonical_slug >>
+        D_ROLE_EXTERNAL_ID: << parameters.role_external_id >>
         D_ACTION: "cancel"
       command: << include(scripts/deploy_or_cancel.sh) >>
