@@ -9,6 +9,8 @@ SetupEnv() {
   export D_AMI_ID=$(eval echo "${D_AMI_ID}")
   export D_MANIFEST_PATH=$(eval echo "${D_MANIFEST_PATH}")
   D_DEPLOY_CONFIG_FILE=$(eval echo "${D_DEPLOY_CONFIG_FILE}")
+  D_DEPLOYER_ROLE_PARAM_NAME=$(eval echo "${D_DEPLOYER_ROLE_PARAM_NAME}")
+  D_DEPLOYOMAT_SERVICE_NAME=$(eval echo "${D_DEPLOYOMAT_SERVICE_NAME}")
 
   echo "D_REGION=$D_REGION"
   echo "D_SERVICE_NAME=$D_SERVICE_NAME"
@@ -19,6 +21,8 @@ SetupEnv() {
   echo "D_MANIFEST_PATH=$D_MANIFEST_PATH"
   echo "D_DEPLOY_CONFIG_FILE=$D_DEPLOY_CONFIG_FILE"
   echo "D_ACTION=$D_ACTION"
+  echo "D_DEPLOYER_ROLE_PARAM_NAME=${D_DEPLOYER_ROLE_PARAM_NAME}"
+  echo "D_DEPLOYOMAT_SERVICE_NAME=${D_DEPLOYOMAT_SERVICE_NAME}"
 
   export AWS_REGION=$D_REGION
 }
@@ -37,8 +41,8 @@ GetAmiId() {
 GetRoleAndSfnArn() {
   PARAM_PREFIX=$(aws ssm get-parameter --name "/omat/account_registry/${D_DEPLOYOMAT_CANONICAL_SLUG}" --output text --query Parameter.Value | jq --raw-output '.prefix')
   echo "PARAM_PREFIX=$PARAM_PREFIX"
-  ROLE_ARN=$(aws ssm get-parameter --name "${PARAM_PREFIX}/roles/deployer" --output text --query Parameter.Value)
-  SFN_ARN=$(aws ssm get-parameter --name "${PARAM_PREFIX}/config/deployomat/${D_ACTION}_sfn_arn" --output text --query Parameter.Value)
+  ROLE_ARN=$(aws ssm get-parameter --name "${PARAM_PREFIX}/roles/${D_DEPLOYER_ROLE_PARAM_NAME}" --output text --query Parameter.Value)
+  SFN_ARN=$(aws ssm get-parameter --name "${PARAM_PREFIX}/config/${D_DEPLOYOMAT_SERVICE_NAME}/${D_ACTION}_sfn_arn" --output text --query Parameter.Value)
 }
 
 AssumeRole() {

@@ -31,6 +31,14 @@ parameters:
     type: boolean
     description: "If true will attach workspace at . and run terraform-restore-output"
     default: false
+  deployomat_service_name:
+    type: string
+    description: "The service name of the deployomat, used for looking up SFN arn parameters."
+    default: "deployomat"
+  deployer_role_param_name:
+    type: string
+    description: "The name of the role parameter to assume to invoke the SFN."
+    default: "deployer"
 
 steps:
   - aws-cli/install
@@ -41,3 +49,5 @@ steps:
       deployomat_canonical_slug: << parameters.deployomat_canonical_slug >>
       role_external_id: << parameters.role_external_id >>
       restore_terraform_output: << parameters.restore_terraform_output >>
+      deployomat_service_name: << parameters.deployomat_service_name >>
+      deployer_role_param_name: << parameters.deployer_role_param_name >>

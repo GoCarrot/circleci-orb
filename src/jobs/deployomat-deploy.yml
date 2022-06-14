@@ -47,6 +47,14 @@ parameters:
     type: string
     description: "Optional path to a file containing values to be placed in DeployConfig, may be an env var"
     default: ""
+  deployomat_service_name:
+    type: string
+    description: "The service name of the deployomat, used for looking up SFN arn parameters."
+    default: "deployomat"
+  deployer_role_param_name:
+    type: string
+    description: "The name of the role parameter to assume to invoke the SFN."
+    default: "deployer"
 
 steps:
   - aws-cli/install
@@ -61,3 +69,5 @@ steps:
       restore_workspace: << parameters.restore_workspace >>
       restore_terraform_output: << parameters.restore_terraform_output >>
       deploy_config_file: << parameters.deploy_config_file >>
+      deployomat_service_name: << parameters.deployomat_service_name >>
+      deployer_role_param_name: << parameters.deployer_role_param_name >>

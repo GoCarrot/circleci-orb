@@ -42,6 +42,14 @@ parameters:
     type: string
     description: "If present, the ExternalId to use when assuming a role in AWS."
     default: "$ROLE_EXTERNAL_ID"
+  deployomat_service_name:
+    type: string
+    description: "The service name of the deployomat, used for looking up SFN arn parameters."
+    default: "deployomat"
+  deployer_role_param_name:
+    type: string
+    description: "The name of the role parameter to assume to invoke the SFN."
+    default: "deployer"
 
 steps:
   - when:
@@ -74,4 +82,6 @@ steps:
         D_MANIFEST_PATH: << parameters.packer_manifest_path >>
         D_DEPLOY_CONFIG_FILE: << parameters.deploy_config_file >>
         D_ACTION: "deploy"
+        D_DEPLOYOMAT_SERVICE_NAME: << parameters.deployomat_service_name >>
+        D_DEPLOYER_ROLE_PARAM_NAME: << parameters.deployer_role_param_name >>
       command: << include(scripts/deploy_or_cancel.sh) >>
