@@ -9,6 +9,10 @@ parameters:
     type: "string"
     description: "Name of the service being deployed"
     default: ""
+  header_type:
+    type: "string"
+    description: "The type specifier for the block indicating what's happening"
+    default: "header"
 
 steps:
   - run:
@@ -24,7 +28,7 @@ steps:
             \"text\": \"${HEADER}\",
             \"blocks\": [
               {
-                \"type\": \"header\",
+                \"type\": \"<< parameters.header_type >>\",
                 \"text\": {
                   \"type\": \"plain_text\",
                   \"text\": \"${HEADER} :octagonal_sign::no_good: \",
