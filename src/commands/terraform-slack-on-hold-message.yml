@@ -10,6 +10,11 @@ parameters:
     description: "Environment variable name to export our template to."
     default: "TEAK_TF_ON_HOLD"
 
+  header_type:
+    type: "string"
+    description: "The type specifier for the block indicating what's happening"
+    default: "header"
+
 steps:
   - run:
       name: "Generate notification template"
@@ -20,7 +25,7 @@ steps:
             \"text\": \"${CIRCLE_PROJECT_REPONAME} ${CIRCLE_BRANCH} job on hold, waiting for approval.\",
             \"blocks\": [
               {
-                \"type\": \"header\",
+                \"type\": \"<< parameters.header_type >>\",
                 \"text\": {
                   \"type\": \"plain_text\",
                   \"text\": \"${CIRCLE_PROJECT_REPONAME} ${CIRCLE_BRANCH} job on hold, waiting for approval. :raised_hand:\",
