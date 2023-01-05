@@ -21,6 +21,7 @@ parameters:
 
 steps:
   - aws-cli/install
+  - aws-oidc-assume
   - build-dependent-images:
       region: << parameters.region >>
       ami_name_prefix: << parameters.ami_name_prefix >>

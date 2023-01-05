@@ -1,0 +1,30 @@
+description: >
+  Assumes an AWS IAM role using CIRCLE_OIDC_TOKEN. Must have the AWS cli installed.
+
+parameters:
+  region:
+    type: string
+    description: "The AWS region to run in, can be an env var"
+    default: "$AWS_REGION"
+  role_arn:
+    type: string
+    description: "The role arn to assume, can be an env var"
+    default: "$AWS_ROLE_ARN"
+  duration_seconds:
+    type: integer
+    description: "The number of seconds to assume the role for"
+    default: 3600
+  role_external_id:
+    type: string
+    description: "If present, the ExternalId to use when assuming the role in AWS."
+    default: "$ROLE_EXTERNAL_ID"
+
+steps:
+  - run:
+      name: "Assume Role"
+      environment:
+        D_REGION: << parameters.region >>
+        D_ROLE_ARN: << parameters.role_arn >>
+        D_DURATION_SECONDS: << parameters.duration_seconds >>
+        D_ROLE_EXTERNAL_ID: << parameters.role_external_id >>
+      command: << include(scripts/aws_oidc_assume.sh) >>

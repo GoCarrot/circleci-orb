@@ -58,6 +58,7 @@ parameters:
 
 steps:
   - aws-cli/install
+  - aws-oidc-assume
   - deployomat-deploy:
       region: << parameters.region >>
       service_name: << parameters.service_name >>

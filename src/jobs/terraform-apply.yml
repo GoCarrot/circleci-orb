@@ -89,6 +89,8 @@ parameters:
 
 steps:
   - checkout
+  - aws-cli/install
+  - aws-oidc-assume
   - terraform-apply:
       version: << parameters.version >>
       platform: << parameters.platform >>

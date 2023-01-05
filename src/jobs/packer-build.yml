@@ -93,6 +93,8 @@ parameters:
 
 steps:
   - checkout
+  - aws-cli/install
+  - aws-oidc-assume
   - packer-install:
       version: << parameters.version >>
       platform: << parameters.platform >>
