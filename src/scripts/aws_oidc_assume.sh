@@ -24,9 +24,10 @@ AssumeRole() {
 }
 
 PersistEnvVars() {
-  echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> "${BASH_ENV}"
-  echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> "${BASH_ENV}"
-  echo "AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}" >> "${BASH_ENV}"
+  echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"
+  echo "export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> "${BASH_ENV}"
+  echo "export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> "${BASH_ENV}"
+  echo "export AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}" >> "${BASH_ENV}"
 }
 
 if [ -z "$AWS_ACCESS_KEY_ID" ]; then
