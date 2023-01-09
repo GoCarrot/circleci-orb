@@ -1,0 +1,17 @@
+description: "Build Teak Docs"
+
+docker:
+  - image: cimg/base:stable
+
+resource_class: small
+
+parameters:
+  build_type:
+    type: enum
+    default: "development"
+    enum: ["development", "production"]
+
+
+steps:
+  - build-antora-playbook:
+      build_type: << parameters.build_type >>
