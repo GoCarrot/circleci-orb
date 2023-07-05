@@ -24,6 +24,11 @@ task :validate do
   end
 end
 
+desc 'Run shellcheck on all scripts'
+task :shellcheck do
+  sh "shellcheck src/scripts/*", verbose: false
+end
+
 desc 'Publish the orb to the dev:alpha tag'
 task :publish do
   with_packed_orb do |orbfile|
