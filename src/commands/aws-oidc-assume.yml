@@ -1,5 +1,5 @@
 description: >
-  Assumes an AWS IAM role using CIRCLE_OIDC_TOKEN. Must have the AWS cli installed.
+  Assumes an AWS IAM role using CIRCLE_OIDC_TOKEN_V2. Must have the AWS cli installed.
 
 parameters:
   region:
