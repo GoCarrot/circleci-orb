@@ -29,6 +29,11 @@ task :shellcheck do
   sh "shellcheck src/scripts/*", verbose: false
 end
 
+desc 'Run script tests'
+task :test do
+  sh "test/tag_promote_test.sh", verbose: false
+end
+
 desc 'Publish the orb to the dev:alpha tag'
 task :publish do
   with_packed_orb do |orbfile|

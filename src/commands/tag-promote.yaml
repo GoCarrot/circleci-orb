@@ -25,8 +25,7 @@ steps:
               - "<< parameters.fingerprint >>"
   - run:
       name: Promote Tagged Build
-      command: |
-        git config user.email "team@teak.io"
-        git config user.name "Teak CI"
-        export PVERSION=`git log -1 --pretty=%B | perl -wne '/[Pp]romote( to)?: ([\w\.\-]+)/i and print $2'`
-        [ ! -z "$PVERSION" ] && (git tag -a $PVERSION -m "Promoted by CI" && git push --tags && << parameters.on_tag >>) || echo "No tag needed" && << parameters.on_skip >>
+      environment:
+        ON_TAG: << parameters.on_tag >>
+        ON_SKIP: << parameters.on_skip >>
+      command: << include(scripts/tag_promote.sh) >>
