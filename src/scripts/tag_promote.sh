@@ -1,7 +1,7 @@
 #!/bin/bash -eo pipefail
 
 ParsePromoteVersion() {
-  git log -1 --pretty=%B | perl -wne '/[Pp]romote( to)?: ([\w\.\-]+)/i and print $2'
+  git log -1 --pretty=%s | perl -wne '/[Pp]romote( to)?: ([\w\.\-]+)/i and print $2'
 }
 
 Main() {
