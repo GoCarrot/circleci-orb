@@ -2,7 +2,8 @@
 # shellcheck disable=SC1091
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
-source src/scripts/tag_promote.sh
+script="$PWD/src/scripts/tag_promote.sh"
+SDK_UTILS_SOURCE_ONLY=1 source "$script"
 
 failures=0
 
@@ -39,6 +40,12 @@ rm -rf "$dir"
 dir="$(printf 'Fix a typo\n' | commit_repo)"
 actual="$(cd "$dir" && ParsePromoteVersion)"
 assert_eq "non-promote commit yields no version" "" "$actual"
+rm -rf "$dir"
+
+# CircleCI runs a step's command as a string, not as a file, so run it that way.
+dir="$(printf 'Fix a typo\n' | commit_repo)"
+actual="$(cd "$dir" && ON_SKIP=':' ON_TAG=':' bash -eo pipefail -c "$(cat "$script")" 2>&1)"
+assert_eq "script body runs when executed as a command string" "No tag needed" "$actual"
 rm -rf "$dir"
 
 if [ "$failures" -gt 0 ]; then

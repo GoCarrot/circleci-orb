@@ -20,6 +20,6 @@ Main() {
   fi
 }
 
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+if [[ -z "${SDK_UTILS_SOURCE_ONLY:-}" ]]; then
   Main
 fi
